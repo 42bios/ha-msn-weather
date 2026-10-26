@@ -1,0 +1,375 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MSN Weer",
+        "description": "Standaard wordt de locatie van je Home Assistant-installatie gebruikt (en gevolgd als die verandert). Zet dit uit om een andere plek op de kaart te kiezen – of plak een MSN Weer-URL, die heeft voorrang.",
+        "data": {
+          "name": "Naam",
+          "location": "Locatie (alleen zonder de Home Assistant-locatie)",
+          "msn_url": "MSN Weer-URL (optioneel)",
+          "language": "Taal van de teksten",
+          "use_home_location": "Locatie van Home Assistant gebruiken"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken met MSN Weer.",
+      "invalid_auth": "MSN heeft de API-sleutel geweigerd.",
+      "invalid_url": "De URL bevat geen geldige loc-parameter."
+    },
+    "abort": {
+      "already_configured": "Deze locatie is al geconfigureerd.",
+      "reauth_use_options": "Werk de API-sleutel bij in de opties van de integratie."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MSN Weer",
+        "data": {
+          "scan_interval": "Update-interval (minuten)",
+          "api_key": "API-sleutel (alleen wijzigen als MSN hem heeft vervangen)",
+          "map_zoom": "Kaartzoom (3 = continent, 8 = regio, 11 = lokaal)",
+          "map_width": "Kaartbreedte",
+          "map_height": "Kaarthoogte",
+          "map_frames": "Animatieframes per kaart (1 = geen animatie)",
+          "map_hires": "Hoge resolutie (2x pixeldichtheid)",
+          "cyclone_radius": "Tropische cyclonen: straal (0 = wereldwijd)",
+          "cyclone_focus": "Kaart tropische cyclonen: welke storm volgen",
+          "cyclone_disturbances": "Storingen op de cyclonenkaart tonen",
+          "language": "Taal van de MSN-teksten en kaartlabels",
+          "map_labels": "Titel en legenda in de kaartafbeeldingen tekenen",
+          "map_frame_ms": "Animatie: milliseconden per beeld (minder = sneller)"
+        },
+        "data_description": {
+          "cyclone_radius": "Alleen stormen die zich binnen deze afstand van de locatie bevinden – of daar volgens de verwachting komen – worden getoond en geteld.",
+          "map_labels": "Uit: de MSN Weer-kaartkaart toont ze als overlay (schone afbeeldingen); laat aan voor andere kaarten en meldingen."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperatuur"
+      },
+      "temperature_high": {
+        "name": "Maximum vandaag"
+      },
+      "temperature_low": {
+        "name": "Minimum vandaag"
+      },
+      "apparent_temperature": {
+        "name": "Gevoelstemperatuur"
+      },
+      "dew_point": {
+        "name": "Dauwpunt"
+      },
+      "condition": {
+        "name": "Weersgesteldheid"
+      },
+      "cloud_cover": {
+        "name": "Bewolking"
+      },
+      "precipitation_today": {
+        "name": "Neerslag vandaag"
+      },
+      "precipitation_probability": {
+        "name": "Neerslagkans"
+      },
+      "nowcast": {
+        "name": "Neerslag komende 2 uur"
+      },
+      "wind_speed": {
+        "name": "Windsnelheid"
+      },
+      "wind_gust": {
+        "name": "Windstoten"
+      },
+      "wind_bearing": {
+        "name": "Windrichting (graden)"
+      },
+      "wind_direction": {
+        "name": "Windrichting"
+      },
+      "humidity": {
+        "name": "Luchtvochtigheid"
+      },
+      "uv_index": {
+        "name": "UV-index"
+      },
+      "aqi": {
+        "name": "Luchtkwaliteitsindex"
+      },
+      "ozone": {
+        "name": "Ozon (O₃)"
+      },
+      "pm25": {
+        "name": "PM2,5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "no2": {
+        "name": "Stikstofdioxide (NO₂)"
+      },
+      "co": {
+        "name": "Koolmonoxide (CO)"
+      },
+      "so2": {
+        "name": "Zwaveldioxide (SO₂)"
+      },
+      "pollen": {
+        "name": "Pollen"
+      },
+      "visibility": {
+        "name": "Zicht"
+      },
+      "pressure": {
+        "name": "Luchtdruk"
+      },
+      "sunrise": {
+        "name": "Zonsopkomst"
+      },
+      "sunset": {
+        "name": "Zonsondergang"
+      },
+      "daylight": {
+        "name": "Daglengte"
+      },
+      "moonrise": {
+        "name": "Maanopkomst"
+      },
+      "moonset": {
+        "name": "Maanondergang"
+      },
+      "moon_visible": {
+        "name": "Maan zichtbaar"
+      },
+      "moon_phase": {
+        "name": "Maanfase"
+      },
+      "moon_illumination": {
+        "name": "Maanverlichting"
+      },
+      "alerts": {
+        "name": "Weerwaarschuwingen"
+      },
+      "last_update": {
+        "name": "Laatste update"
+      },
+      "life_dressing": {
+        "name": "Kleding"
+      },
+      "life_uv": {
+        "name": "UV-blootstelling"
+      },
+      "life_wind_chill": {
+        "name": "Gevoelskou"
+      },
+      "life_heat_stroke": {
+        "name": "Hitteberoerte"
+      },
+      "life_umbrella": {
+        "name": "Paraplu"
+      },
+      "life_outdoor": {
+        "name": "Buiten"
+      },
+      "life_driving": {
+        "name": "Autorijden"
+      },
+      "life_cycling": {
+        "name": "Fietsen"
+      },
+      "life_gardening": {
+        "name": "Tuinieren"
+      },
+      "life_hiking": {
+        "name": "Wandelen in de natuur"
+      },
+      "life_running": {
+        "name": "Hardlopen"
+      },
+      "life_stargazing": {
+        "name": "Sterrenkijken"
+      },
+      "life_walking": {
+        "name": "Buiten / wandelen"
+      },
+      "life_picnic": {
+        "name": "Picknick"
+      },
+      "tropical_cyclones": {
+        "name": "Tropische cyclonen"
+      },
+      "yesterday_temp_high": {
+        "name": "Maximum gisteren"
+      },
+      "yesterday_temp_low": {
+        "name": "Minimum gisteren"
+      },
+      "yesterday_precipitation": {
+        "name": "Neerslag gisteren"
+      },
+      "yesterday_feels_high": {
+        "name": "Max. gevoelstemperatuur gisteren"
+      },
+      "yesterday_feels_low": {
+        "name": "Min. gevoelstemperatuur gisteren"
+      },
+      "yesterday_wind_max": {
+        "name": "Max. wind gisteren"
+      },
+      "yesterday_wind_gust": {
+        "name": "Windstoten gisteren"
+      },
+      "yesterday_humidity_high": {
+        "name": "Max. luchtvochtigheid gisteren"
+      },
+      "yesterday_humidity_low": {
+        "name": "Min. luchtvochtigheid gisteren"
+      },
+      "yesterday_pressure_high": {
+        "name": "Max. luchtdruk gisteren"
+      },
+      "yesterday_pressure_low": {
+        "name": "Min. luchtdruk gisteren"
+      },
+      "yesterday_uv_max": {
+        "name": "Max. UV gisteren"
+      },
+      "yesterday_visibility_max": {
+        "name": "Max. zicht gisteren"
+      },
+      "yesterday_cloud_cover": {
+        "name": "Bewolking gisteren"
+      },
+      "daily_details": {
+        "name": "Dagdetails"
+      },
+      "climate_avg_high": {
+        "name": "Klimatologisch gem. maximum"
+      },
+      "climate_avg_low": {
+        "name": "Klimatologisch gem. minimum"
+      },
+      "climate_record_high": {
+        "name": "Warmterecord"
+      },
+      "climate_record_low": {
+        "name": "Kouderecord"
+      },
+      "climate_avg_precipitation": {
+        "name": "Klimatologisch gem. neerslag"
+      },
+      "monthly_forecast": {
+        "name": "Maandverwachting"
+      },
+      "nowcast_change": {
+        "name": "Neerslagwissel over"
+      }
+    },
+    "binary_sensor": {
+      "alert_active": {
+        "name": "Weerwaarschuwing actief"
+      },
+      "cyclone_nearby": {
+        "name": "Tropische cycloon in de buurt"
+      }
+    },
+    "image": {
+      "map_temperature": {
+        "name": "Kaart temperatuur"
+      },
+      "map_precipitation": {
+        "name": "Kaart neerslag"
+      },
+      "map_wind": {
+        "name": "Kaart wind"
+      },
+      "map_clouds": {
+        "name": "Kaart wolken"
+      },
+      "map_humidity": {
+        "name": "Kaart luchtvochtigheid"
+      },
+      "map_visibility": {
+        "name": "Kaart zicht"
+      },
+      "map_pressure": {
+        "name": "Kaart luchtdruk"
+      },
+      "map_dew_point": {
+        "name": "Kaart dauwpunt"
+      },
+      "map_air_quality": {
+        "name": "Kaart luchtkwaliteit"
+      },
+      "map_pollen": {
+        "name": "Kaart pollen"
+      },
+      "map_satellite": {
+        "name": "Kaart satelliet"
+      },
+      "map_alerts": {
+        "name": "Kaart noodweer"
+      },
+      "map_winter": {
+        "name": "Kaart winterweer"
+      },
+      "map_lightning": {
+        "name": "Kaart bliksem"
+      },
+      "map_tropical_cyclones": {
+        "name": "Kaart tropische cycloon"
+      },
+      "map_radar": {
+        "name": "Kaart neerslagradar"
+      }
+    },
+    "number": {
+      "map_forecast_hours": {
+        "name": "Kaartverwachting"
+      },
+      "map_zoom": {
+        "name": "Kaartzoom"
+      }
+    },
+    "select": {
+      "cyclone_map_storm": {
+        "name": "Storm op de cyclonenkaart",
+        "state": {
+          "auto": "Automatisch"
+        }
+      }
+    }
+  },
+  "selector": {
+    "cyclone_focus": {
+      "options": {
+        "strongest": "Sterkste storm",
+        "nearest": "Dichtstbijzijnde storm"
+      }
+    }
+  },
+  "issues": {
+    "api_key_invalid": {
+      "title": "MSN Weer: API-sleutel geweigerd",
+      "description": "MSN heeft de API-sleutel van \"{name}\" geweigerd en op msn.com kon niet automatisch een geldige sleutel worden gevonden. Open msn.com/weer in een browser, kopieer via de ontwikkelaarstools (tabblad Netwerk) de parameter `apikey` van het verzoek `weather/overview` en vul die in bij de opties van de integratie."
+    }
+  },
+  "services": {
+    "set_map_zoom": {
+      "name": "Kaartzoom instellen",
+      "description": "Geeft een weerkaart een eigen zoom (leeg: gedeelde kaartzoom).",
+      "fields": {
+        "zoom": {
+          "name": "Zoom",
+          "description": "3 = continent, 8 = regio, 11 = lokaal"
+        }
+      }
+    }
+  }
+}

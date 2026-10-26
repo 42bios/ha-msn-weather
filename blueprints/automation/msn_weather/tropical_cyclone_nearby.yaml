@@ -1,0 +1,36 @@
+blueprint:
+  name: MSN Weather – tropical cyclone nearby
+  description: >-
+    Runs your actions when a tropical cyclone is inside – or is forecast to move
+    into – the radius set in the MSN Weather options (set a radius there, with 0
+    every storm worldwide counts). Variables: `storms` (names) and `closest_km`.
+  domain: automation
+  source_url: https://github.com/42bios/ha-msn-weather/blob/main/blueprints/automation/msn_weather/tropical_cyclone_nearby.yaml
+  input:
+    cyclone_sensor:
+      name: Tropical cyclone nearby sensor
+      selector:
+        entity:
+          filter:
+            - integration: msn_weather
+              domain: binary_sensor
+    actions:
+      name: Actions
+      description: What should happen. Use {{ storms }} and {{ closest_km }} in the message.
+      selector:
+        action: {}
+
+mode: single
+
+triggers:
+  - trigger: state
+    entity_id: !input cyclone_sensor
+    from: "off"
+    to: "on"
+
+variables:
+  cyclone_sensor: !input cyclone_sensor
+  storms: "{{ (state_attr(cyclone_sensor, 'storms') or []) | join(', ') }}"
+  closest_km: "{{ state_attr(cyclone_sensor, 'closest_km') }}"
+
+actions: !input actions

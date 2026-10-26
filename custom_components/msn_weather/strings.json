@@ -1,0 +1,375 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MSN Weather",
+        "description": "By default the location of your Home Assistant installation is used (and followed if it changes). Switch it off to pick another place on the map – or paste an MSN weather URL, which takes precedence.",
+        "data": {
+          "name": "Name",
+          "location": "Location (only when not using the Home Assistant location)",
+          "msn_url": "MSN weather URL (optional)",
+          "language": "Text language",
+          "use_home_location": "Use the Home Assistant location"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to MSN weather.",
+      "invalid_auth": "MSN rejected the API key.",
+      "invalid_url": "The URL contains no valid loc parameter."
+    },
+    "abort": {
+      "already_configured": "This location is already configured.",
+      "reauth_use_options": "Please update the API key in the integration options."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MSN Weather",
+        "data": {
+          "scan_interval": "Update interval (minutes)",
+          "api_key": "API key (change only if MSN rotated it)",
+          "map_zoom": "Map zoom (3 = continent, 8 = region, 11 = local)",
+          "map_width": "Map width",
+          "map_height": "Map height",
+          "map_frames": "Animation frames per map (1 = no animation)",
+          "map_hires": "High resolution (2x pixel density)",
+          "cyclone_radius": "Tropical cyclones: radius (0 = worldwide)",
+          "cyclone_focus": "Tropical cyclone map: which storm to follow",
+          "cyclone_disturbances": "Show disturbances on the cyclone map",
+          "language": "Language of the MSN texts and map labels",
+          "map_labels": "Draw title and legend into the map images",
+          "map_frame_ms": "Animation: milliseconds per frame (smaller = faster)"
+        },
+        "data_description": {
+          "cyclone_radius": "Only storms that are – or are forecast to be – within this distance of the location are shown and counted.",
+          "map_labels": "Off: the MSN Weather map card shows them as overlays instead (keeps the images clean); leave on for other cards and notifications."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperature"
+      },
+      "temperature_high": {
+        "name": "Today's high"
+      },
+      "temperature_low": {
+        "name": "Today's low"
+      },
+      "apparent_temperature": {
+        "name": "Feels like"
+      },
+      "dew_point": {
+        "name": "Dew point"
+      },
+      "condition": {
+        "name": "Condition"
+      },
+      "cloud_cover": {
+        "name": "Cloud cover"
+      },
+      "precipitation_today": {
+        "name": "Precipitation today"
+      },
+      "precipitation_probability": {
+        "name": "Precipitation probability"
+      },
+      "nowcast": {
+        "name": "Precipitation next 2 hours"
+      },
+      "wind_speed": {
+        "name": "Wind speed"
+      },
+      "wind_gust": {
+        "name": "Wind gust"
+      },
+      "wind_bearing": {
+        "name": "Wind bearing"
+      },
+      "wind_direction": {
+        "name": "Wind direction"
+      },
+      "humidity": {
+        "name": "Humidity"
+      },
+      "uv_index": {
+        "name": "UV index"
+      },
+      "aqi": {
+        "name": "Air quality index"
+      },
+      "ozone": {
+        "name": "Ozone (O₃)"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "no2": {
+        "name": "Nitrogen dioxide (NO₂)"
+      },
+      "co": {
+        "name": "Carbon monoxide (CO)"
+      },
+      "so2": {
+        "name": "Sulphur dioxide (SO₂)"
+      },
+      "pollen": {
+        "name": "Pollen"
+      },
+      "visibility": {
+        "name": "Visibility"
+      },
+      "pressure": {
+        "name": "Pressure"
+      },
+      "sunrise": {
+        "name": "Sunrise"
+      },
+      "sunset": {
+        "name": "Sunset"
+      },
+      "daylight": {
+        "name": "Daylight"
+      },
+      "moonrise": {
+        "name": "Moonrise"
+      },
+      "moonset": {
+        "name": "Moonset"
+      },
+      "moon_visible": {
+        "name": "Moon visible"
+      },
+      "moon_phase": {
+        "name": "Moon phase"
+      },
+      "moon_illumination": {
+        "name": "Moon illumination"
+      },
+      "alerts": {
+        "name": "Weather alerts"
+      },
+      "last_update": {
+        "name": "Last update"
+      },
+      "life_dressing": {
+        "name": "Clothing"
+      },
+      "life_uv": {
+        "name": "UV exposure"
+      },
+      "life_wind_chill": {
+        "name": "Wind chill"
+      },
+      "life_heat_stroke": {
+        "name": "Heat stroke"
+      },
+      "life_umbrella": {
+        "name": "Umbrella"
+      },
+      "life_outdoor": {
+        "name": "Outdoors"
+      },
+      "life_driving": {
+        "name": "Driving"
+      },
+      "life_cycling": {
+        "name": "Cycling"
+      },
+      "life_gardening": {
+        "name": "Gardening"
+      },
+      "life_hiking": {
+        "name": "Hiking"
+      },
+      "life_running": {
+        "name": "Running"
+      },
+      "life_stargazing": {
+        "name": "Stargazing"
+      },
+      "life_walking": {
+        "name": "Outdoors / walking"
+      },
+      "life_picnic": {
+        "name": "Picnic"
+      },
+      "tropical_cyclones": {
+        "name": "Tropical cyclones"
+      },
+      "yesterday_temp_high": {
+        "name": "Yesterday's high"
+      },
+      "yesterday_temp_low": {
+        "name": "Yesterday's low"
+      },
+      "yesterday_precipitation": {
+        "name": "Precipitation yesterday"
+      },
+      "yesterday_feels_high": {
+        "name": "Feels like max yesterday"
+      },
+      "yesterday_feels_low": {
+        "name": "Feels like min yesterday"
+      },
+      "yesterday_wind_max": {
+        "name": "Max wind yesterday"
+      },
+      "yesterday_wind_gust": {
+        "name": "Gusts yesterday"
+      },
+      "yesterday_humidity_high": {
+        "name": "Max humidity yesterday"
+      },
+      "yesterday_humidity_low": {
+        "name": "Min humidity yesterday"
+      },
+      "yesterday_pressure_high": {
+        "name": "Max pressure yesterday"
+      },
+      "yesterday_pressure_low": {
+        "name": "Min pressure yesterday"
+      },
+      "yesterday_uv_max": {
+        "name": "Max UV yesterday"
+      },
+      "yesterday_visibility_max": {
+        "name": "Max visibility yesterday"
+      },
+      "yesterday_cloud_cover": {
+        "name": "Cloud cover yesterday"
+      },
+      "daily_details": {
+        "name": "Daily details"
+      },
+      "climate_avg_high": {
+        "name": "Climate avg high"
+      },
+      "climate_avg_low": {
+        "name": "Climate avg low"
+      },
+      "climate_record_high": {
+        "name": "Record high"
+      },
+      "climate_record_low": {
+        "name": "Record low"
+      },
+      "climate_avg_precipitation": {
+        "name": "Climate avg precipitation"
+      },
+      "monthly_forecast": {
+        "name": "Monthly forecast"
+      },
+      "nowcast_change": {
+        "name": "Precipitation change in"
+      }
+    },
+    "binary_sensor": {
+      "alert_active": {
+        "name": "Weather alert active"
+      },
+      "cyclone_nearby": {
+        "name": "Tropical cyclone nearby"
+      }
+    },
+    "image": {
+      "map_temperature": {
+        "name": "Map temperature"
+      },
+      "map_precipitation": {
+        "name": "Map precipitation"
+      },
+      "map_wind": {
+        "name": "Map wind"
+      },
+      "map_clouds": {
+        "name": "Map clouds"
+      },
+      "map_humidity": {
+        "name": "Map humidity"
+      },
+      "map_visibility": {
+        "name": "Map visibility"
+      },
+      "map_pressure": {
+        "name": "Map pressure"
+      },
+      "map_dew_point": {
+        "name": "Map dew point"
+      },
+      "map_air_quality": {
+        "name": "Map air quality"
+      },
+      "map_pollen": {
+        "name": "Map pollen"
+      },
+      "map_satellite": {
+        "name": "Map satellite"
+      },
+      "map_alerts": {
+        "name": "Map severe weather"
+      },
+      "map_winter": {
+        "name": "Map winter weather"
+      },
+      "map_lightning": {
+        "name": "Map lightning"
+      },
+      "map_tropical_cyclones": {
+        "name": "Map tropical cyclone"
+      },
+      "map_radar": {
+        "name": "Map precipitation radar"
+      }
+    },
+    "number": {
+      "map_forecast_hours": {
+        "name": "Map forecast"
+      },
+      "map_zoom": {
+        "name": "Map zoom"
+      }
+    },
+    "select": {
+      "cyclone_map_storm": {
+        "name": "Cyclone map storm",
+        "state": {
+          "auto": "Automatic"
+        }
+      }
+    }
+  },
+  "selector": {
+    "cyclone_focus": {
+      "options": {
+        "strongest": "Strongest storm",
+        "nearest": "Nearest storm"
+      }
+    }
+  },
+  "issues": {
+    "api_key_invalid": {
+      "title": "MSN Weather: API key rejected",
+      "description": "MSN rejected the API key of \"{name}\" and no current key could be found on msn.com automatically. Open msn.com/weather in a browser, copy the `apikey` parameter of the `weather/overview` request from the developer tools (network tab) and enter it in the integration options."
+    }
+  },
+  "services": {
+    "set_map_zoom": {
+      "name": "Set map zoom",
+      "description": "Gives a weather map its own zoom (empty: follow the shared map zoom).",
+      "fields": {
+        "zoom": {
+          "name": "Zoom",
+          "description": "3 = continent, 8 = region, 11 = local"
+        }
+      }
+    }
+  }
+}

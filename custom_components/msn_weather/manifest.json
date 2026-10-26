@@ -1,0 +1,21 @@
+{
+  "domain": "msn_weather",
+  "name": "MSN Weather",
+  "codeowners": [
+    "@42bios"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http",
+    "image"
+  ],
+  "documentation": "https://github.com/42bios/ha-msn-weather",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/42bios/ha-msn-weather/issues",
+  "requirements": [
+    "numpy>=1.26.0"
+  ],
+  "version": "1.21.1"
+}

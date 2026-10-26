@@ -1,0 +1,13 @@
+set_map_zoom:
+  target:
+    entity:
+      integration: msn_weather
+      domain: image
+  fields:
+    zoom:
+      selector:
+        number:
+          min: 3
+          max: 11
+          step: 1
+          mode: slider

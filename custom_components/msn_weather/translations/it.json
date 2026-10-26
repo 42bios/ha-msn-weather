@@ -1,0 +1,375 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MSN Meteo",
+        "description": "Per impostazione predefinita viene usata la posizione della tua installazione di Home Assistant (e aggiornata se cambia). Disattiva l'opzione per scegliere un altro luogo sulla mappa – oppure incolla un URL di MSN Meteo, che ha la precedenza.",
+        "data": {
+          "name": "Nome",
+          "location": "Posizione (solo senza la posizione di Home Assistant)",
+          "msn_url": "URL di MSN Meteo (facoltativo)",
+          "language": "Lingua dei testi",
+          "use_home_location": "Usa la posizione di Home Assistant"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossibile connettersi a MSN Meteo.",
+      "invalid_auth": "MSN ha rifiutato la chiave API.",
+      "invalid_url": "L'URL non contiene un parametro loc valido."
+    },
+    "abort": {
+      "already_configured": "Questo luogo è già configurato.",
+      "reauth_use_options": "Aggiorna la chiave API nelle opzioni dell'integrazione."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MSN Meteo",
+        "data": {
+          "scan_interval": "Intervallo di aggiornamento (minuti)",
+          "api_key": "Chiave API (modificare solo se MSN l'ha cambiata)",
+          "map_zoom": "Zoom mappa (3 = continente, 8 = regione, 11 = locale)",
+          "map_width": "Larghezza mappa",
+          "map_height": "Altezza mappa",
+          "map_frames": "Fotogrammi di animazione per mappa (1 = nessuna animazione)",
+          "map_hires": "Alta risoluzione (densità di pixel 2x)",
+          "cyclone_radius": "Cicloni tropicali: raggio (0 = in tutto il mondo)",
+          "cyclone_focus": "Mappa dei cicloni tropicali: quale tempesta seguire",
+          "cyclone_disturbances": "Mostra le perturbazioni sulla mappa dei cicloni",
+          "language": "Lingua dei testi MSN e delle etichette delle mappe",
+          "map_labels": "Disegna titolo e legenda nelle immagini delle mappe",
+          "map_frame_ms": "Animazione: millisecondi per fotogramma (meno = più veloce)"
+        },
+        "data_description": {
+          "cyclone_radius": "Vengono mostrate e conteggiate solo le tempeste che si trovano – o secondo le previsioni si troveranno – entro questa distanza dal luogo.",
+          "map_labels": "Disattivato: la scheda mappa di MSN Meteo li mostra come sovrapposizioni (immagini pulite); lasciare attivo per altre schede e notifiche."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "temperature_high": {
+        "name": "Massima di oggi"
+      },
+      "temperature_low": {
+        "name": "Minima di oggi"
+      },
+      "apparent_temperature": {
+        "name": "Percepita"
+      },
+      "dew_point": {
+        "name": "Punto di rugiada"
+      },
+      "condition": {
+        "name": "Condizioni"
+      },
+      "cloud_cover": {
+        "name": "Copertura nuvolosa"
+      },
+      "precipitation_today": {
+        "name": "Precipitazioni oggi"
+      },
+      "precipitation_probability": {
+        "name": "Probabilità di precipitazioni"
+      },
+      "nowcast": {
+        "name": "Precipitazioni prossime 2 ore"
+      },
+      "wind_speed": {
+        "name": "Velocità del vento"
+      },
+      "wind_gust": {
+        "name": "Raffiche di vento"
+      },
+      "wind_bearing": {
+        "name": "Direzione del vento (gradi)"
+      },
+      "wind_direction": {
+        "name": "Direzione del vento"
+      },
+      "humidity": {
+        "name": "Umidità"
+      },
+      "uv_index": {
+        "name": "Indice UV"
+      },
+      "aqi": {
+        "name": "Indice di qualità dell'aria"
+      },
+      "ozone": {
+        "name": "Ozono (O₃)"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "no2": {
+        "name": "Biossido di azoto (NO₂)"
+      },
+      "co": {
+        "name": "Monossido di carbonio (CO)"
+      },
+      "so2": {
+        "name": "Biossido di zolfo (SO₂)"
+      },
+      "pollen": {
+        "name": "Pollini"
+      },
+      "visibility": {
+        "name": "Visibilità"
+      },
+      "pressure": {
+        "name": "Pressione"
+      },
+      "sunrise": {
+        "name": "Alba"
+      },
+      "sunset": {
+        "name": "Tramonto"
+      },
+      "daylight": {
+        "name": "Durata del giorno"
+      },
+      "moonrise": {
+        "name": "Sorgere della luna"
+      },
+      "moonset": {
+        "name": "Tramonto della luna"
+      },
+      "moon_visible": {
+        "name": "Luna visibile"
+      },
+      "moon_phase": {
+        "name": "Fase lunare"
+      },
+      "moon_illumination": {
+        "name": "Illuminazione lunare"
+      },
+      "alerts": {
+        "name": "Allerte meteo"
+      },
+      "last_update": {
+        "name": "Ultimo aggiornamento"
+      },
+      "life_dressing": {
+        "name": "Abbigliamento"
+      },
+      "life_uv": {
+        "name": "Esposizione UV"
+      },
+      "life_wind_chill": {
+        "name": "Raffreddamento da vento"
+      },
+      "life_heat_stroke": {
+        "name": "Colpo di calore"
+      },
+      "life_umbrella": {
+        "name": "Ombrello"
+      },
+      "life_outdoor": {
+        "name": "All'aperto"
+      },
+      "life_driving": {
+        "name": "Guida"
+      },
+      "life_cycling": {
+        "name": "Ciclismo"
+      },
+      "life_gardening": {
+        "name": "Giardinaggio"
+      },
+      "life_hiking": {
+        "name": "Escursionismo"
+      },
+      "life_running": {
+        "name": "Corsa"
+      },
+      "life_stargazing": {
+        "name": "Osservazione delle stelle"
+      },
+      "life_walking": {
+        "name": "All'aperto / passeggiata"
+      },
+      "life_picnic": {
+        "name": "Picnic"
+      },
+      "tropical_cyclones": {
+        "name": "Cicloni tropicali"
+      },
+      "yesterday_temp_high": {
+        "name": "Massima di ieri"
+      },
+      "yesterday_temp_low": {
+        "name": "Minima di ieri"
+      },
+      "yesterday_precipitation": {
+        "name": "Precipitazioni ieri"
+      },
+      "yesterday_feels_high": {
+        "name": "Percepita massima ieri"
+      },
+      "yesterday_feels_low": {
+        "name": "Percepita minima ieri"
+      },
+      "yesterday_wind_max": {
+        "name": "Vento massimo ieri"
+      },
+      "yesterday_wind_gust": {
+        "name": "Raffiche ieri"
+      },
+      "yesterday_humidity_high": {
+        "name": "Umidità massima ieri"
+      },
+      "yesterday_humidity_low": {
+        "name": "Umidità minima ieri"
+      },
+      "yesterday_pressure_high": {
+        "name": "Pressione massima ieri"
+      },
+      "yesterday_pressure_low": {
+        "name": "Pressione minima ieri"
+      },
+      "yesterday_uv_max": {
+        "name": "UV massimo ieri"
+      },
+      "yesterday_visibility_max": {
+        "name": "Visibilità massima ieri"
+      },
+      "yesterday_cloud_cover": {
+        "name": "Copertura nuvolosa ieri"
+      },
+      "daily_details": {
+        "name": "Dettagli giornalieri"
+      },
+      "climate_avg_high": {
+        "name": "Massima media climatica"
+      },
+      "climate_avg_low": {
+        "name": "Minima media climatica"
+      },
+      "climate_record_high": {
+        "name": "Record massimo"
+      },
+      "climate_record_low": {
+        "name": "Record minimo"
+      },
+      "climate_avg_precipitation": {
+        "name": "Precipitazioni medie climatiche"
+      },
+      "monthly_forecast": {
+        "name": "Previsioni mensili"
+      },
+      "nowcast_change": {
+        "name": "Cambio precipitazioni tra"
+      }
+    },
+    "binary_sensor": {
+      "alert_active": {
+        "name": "Allerta meteo attiva"
+      },
+      "cyclone_nearby": {
+        "name": "Ciclone tropicale nelle vicinanze"
+      }
+    },
+    "image": {
+      "map_temperature": {
+        "name": "Mappa temperatura"
+      },
+      "map_precipitation": {
+        "name": "Mappa precipitazioni"
+      },
+      "map_wind": {
+        "name": "Mappa vento"
+      },
+      "map_clouds": {
+        "name": "Mappa nuvole"
+      },
+      "map_humidity": {
+        "name": "Mappa umidità"
+      },
+      "map_visibility": {
+        "name": "Mappa visibilità"
+      },
+      "map_pressure": {
+        "name": "Mappa pressione"
+      },
+      "map_dew_point": {
+        "name": "Mappa punto di rugiada"
+      },
+      "map_air_quality": {
+        "name": "Mappa qualità dell'aria"
+      },
+      "map_pollen": {
+        "name": "Mappa pollini"
+      },
+      "map_satellite": {
+        "name": "Mappa satellite"
+      },
+      "map_alerts": {
+        "name": "Mappa maltempo"
+      },
+      "map_winter": {
+        "name": "Mappa meteo invernale"
+      },
+      "map_lightning": {
+        "name": "Mappa fulmini"
+      },
+      "map_tropical_cyclones": {
+        "name": "Mappa ciclone tropicale"
+      },
+      "map_radar": {
+        "name": "Mappa radar precipitazioni"
+      }
+    },
+    "number": {
+      "map_forecast_hours": {
+        "name": "Previsione mappe"
+      },
+      "map_zoom": {
+        "name": "Zoom mappe"
+      }
+    },
+    "select": {
+      "cyclone_map_storm": {
+        "name": "Tempesta sulla mappa dei cicloni",
+        "state": {
+          "auto": "Automatico"
+        }
+      }
+    }
+  },
+  "selector": {
+    "cyclone_focus": {
+      "options": {
+        "strongest": "Tempesta più forte",
+        "nearest": "Tempesta più vicina"
+      }
+    }
+  },
+  "issues": {
+    "api_key_invalid": {
+      "title": "MSN Meteo: chiave API rifiutata",
+      "description": "MSN ha rifiutato la chiave API di \"{name}\" e su msn.com non è stato possibile trovare automaticamente una chiave valida. Apri msn.com/meteo nel browser, copia dagli strumenti per sviluppatori (scheda Rete) il parametro `apikey` della richiesta `weather/overview` e inseriscilo nelle opzioni dell'integrazione."
+    }
+  },
+  "services": {
+    "set_map_zoom": {
+      "name": "Imposta lo zoom della mappa",
+      "description": "Assegna a una mappa meteo uno zoom proprio (vuoto: zoom comune delle mappe).",
+      "fields": {
+        "zoom": {
+          "name": "Zoom",
+          "description": "3 = continente, 8 = regione, 11 = locale"
+        }
+      }
+    }
+  }
+}

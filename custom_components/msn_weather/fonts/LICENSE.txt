@@ -1,0 +1,3 @@
+DejaVu Sans (https://dejavu-fonts.github.io/) – used to draw the text on the weather maps.
+Bitstream Vera Fonts Copyright (c) 2003 Bitstream, Inc.; DejaVu changes are in the public domain.
+License: https://dejavu-fonts.github.io/License.html

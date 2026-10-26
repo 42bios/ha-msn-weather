@@ -1,0 +1,54 @@
+blueprint:
+  name: MSN Weather – umbrella reminder
+  description: >-
+    Reminds you in the morning to take an umbrella when MSN Weather says you will
+    need one today. Works in every language: it uses the category of the index
+    (1 = no need … 5 = must), not the text. `summary` contains MSN's explanation.
+  domain: automation
+  source_url: https://github.com/42bios/ha-msn-weather/blob/main/blueprints/automation/msn_weather/umbrella_reminder.yaml
+  input:
+    umbrella_sensor:
+      name: Umbrella sensor
+      description: The "umbrella" life index sensor of MSN Weather.
+      selector:
+        entity:
+          filter:
+            - integration: msn_weather
+              domain: sensor
+    time:
+      name: Time
+      default: "07:00:00"
+      selector:
+        time: {}
+    min_category:
+      name: Remind from category
+      description: 2 = probably not needed, 3 = probably needed, 4 = needed, 5 = must.
+      default: 3
+      selector:
+        number:
+          min: 2
+          max: 5
+          mode: slider
+    actions:
+      name: Actions
+      description: What should happen. Use {{ state }} and {{ summary }} in the message.
+      selector:
+        action: {}
+
+mode: single
+
+triggers:
+  - trigger: time
+    at: !input time
+
+variables:
+  umbrella_sensor: !input umbrella_sensor
+  min_category: !input min_category
+  state: "{{ states(umbrella_sensor) }}"
+  summary: "{{ state_attr(umbrella_sensor, 'summary') }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ (state_attr(umbrella_sensor, 'category') | int(0)) >= min_category }}"
+
+actions: !input actions

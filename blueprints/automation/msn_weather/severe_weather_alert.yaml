@@ -1,0 +1,44 @@
+blueprint:
+  name: MSN Weather – severe weather alert
+  description: >-
+    Runs your actions (e.g. a phone notification) when MSN Weather reports a
+    weather warning for your location. The message variables `title`, `level`
+    and `description` contain the details of the most severe active warning.
+  domain: automation
+  source_url: https://github.com/42bios/ha-msn-weather/blob/main/blueprints/automation/msn_weather/severe_weather_alert.yaml
+  input:
+    alert_sensor:
+      name: Weather alert sensor
+      description: The "weather alert active" binary sensor of MSN Weather.
+      selector:
+        entity:
+          filter:
+            - integration: msn_weather
+              domain: binary_sensor
+              device_class: safety
+    actions:
+      name: Actions
+      description: >-
+        What should happen, e.g. "Notifications: send a notification via the mobile app".
+        Use {{ title }}, {{ level }} and {{ description }} in the message.
+      selector:
+        action: {}
+
+mode: queued
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input alert_sensor
+    from: "off"
+    to: "on"
+
+variables:
+  alert_sensor: !input alert_sensor
+  active: "{{ (state_attr(alert_sensor, 'all_alerts') or []) | selectattr('title', 'in', state_attr(alert_sensor, 'active') or []) | list }}"
+  first: "{{ active[0] if active else {} }}"
+  title: "{{ first.title | default((state_attr(alert_sensor, 'active') or ['Weather alert'])[0]) }}"
+  level: "{{ state_attr(alert_sensor, 'highest_level') }}"
+  description: "{{ first.description | default('') }}"
+
+actions: !input actions

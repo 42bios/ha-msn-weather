@@ -1,0 +1,375 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MSN Wetter",
+        "description": "Standardmäßig wird der Standort deiner Home-Assistant-Installation verwendet (und bei Änderungen übernommen). Schalte das aus, um einen anderen Ort auf der Karte zu wählen – oder füge eine MSN-Wetter-URL ein, sie hat Vorrang.",
+        "data": {
+          "name": "Name",
+          "location": "Ort (nur ohne Home-Assistant-Standort)",
+          "msn_url": "MSN-Wetter-URL (optional)",
+          "language": "Sprache der Texte",
+          "use_home_location": "Standort von Home Assistant verwenden"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zu MSN Wetter fehlgeschlagen.",
+      "invalid_auth": "MSN hat den API-Schlüssel abgelehnt.",
+      "invalid_url": "Die URL enthält keinen gültigen loc-Parameter."
+    },
+    "abort": {
+      "already_configured": "Dieser Ort ist bereits eingerichtet.",
+      "reauth_use_options": "Bitte den API-Schlüssel in den Optionen der Integration aktualisieren."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MSN Wetter",
+        "data": {
+          "scan_interval": "Aktualisierungsintervall (Minuten)",
+          "api_key": "API-Schlüssel (nur ändern, wenn MSN ihn gewechselt hat)",
+          "map_zoom": "Karten-Zoomstufe (3 = Europa, 8 = Region, 11 = Ort)",
+          "map_width": "Kartenbreite",
+          "map_height": "Kartenhöhe",
+          "map_frames": "Animation: Bilder pro Karte (1 = keine Animation)",
+          "map_hires": "Hohe Auflösung (doppelte Pixeldichte, schärfer auf großen Bildschirmen)",
+          "cyclone_radius": "Tropische Wirbelstürme: Umkreis (0 = weltweit)",
+          "cyclone_focus": "Zyklon-Karte: welchem Sturm folgen",
+          "cyclone_disturbances": "Störungen auf der Zyklon-Karte anzeigen",
+          "language": "Sprache der MSN-Texte und Kartenbeschriftung",
+          "map_labels": "Titel und Legende ins Kartenbild zeichnen",
+          "map_frame_ms": "Animation: Millisekunden pro Bild (kleiner = schneller)"
+        },
+        "data_description": {
+          "cyclone_radius": "Nur Stürme, die sich in diesem Umkreis um den Standort befinden oder laut Vorhersage hineinziehen, werden angezeigt und gezählt.",
+          "map_labels": "Aus: Die MSN-Wetter-Kartenkarte zeigt sie stattdessen als Leisten an (saubere Bilder); für andere Karten und Benachrichtigungen eingeschaltet lassen."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperatur"
+      },
+      "temperature_high": {
+        "name": "Höchsttemperatur heute"
+      },
+      "temperature_low": {
+        "name": "Tiefsttemperatur heute"
+      },
+      "apparent_temperature": {
+        "name": "Gefühlt"
+      },
+      "dew_point": {
+        "name": "Taupunkt"
+      },
+      "condition": {
+        "name": "Bewölkt / Zustand"
+      },
+      "cloud_cover": {
+        "name": "Bewölkung"
+      },
+      "precipitation_today": {
+        "name": "Niederschlag heute"
+      },
+      "precipitation_probability": {
+        "name": "Niederschlagswahrscheinlichkeit"
+      },
+      "nowcast": {
+        "name": "Niederschlag nächste 2 Stunden"
+      },
+      "wind_speed": {
+        "name": "Windgeschwindigkeit"
+      },
+      "wind_gust": {
+        "name": "Windböen"
+      },
+      "wind_bearing": {
+        "name": "Windrichtung (Grad)"
+      },
+      "wind_direction": {
+        "name": "Windrichtung"
+      },
+      "humidity": {
+        "name": "Luftfeuchtigkeit"
+      },
+      "uv_index": {
+        "name": "UV-Index"
+      },
+      "aqi": {
+        "name": "Luftqualitätsindex"
+      },
+      "ozone": {
+        "name": "Ozon (O₃)"
+      },
+      "pm25": {
+        "name": "Feinstaub PM2,5"
+      },
+      "pm10": {
+        "name": "Feinstaub PM10"
+      },
+      "no2": {
+        "name": "Stickstoffdioxid (NO₂)"
+      },
+      "co": {
+        "name": "Kohlenmonoxid (CO)"
+      },
+      "so2": {
+        "name": "Schwefeldioxid (SO₂)"
+      },
+      "pollen": {
+        "name": "Pollen"
+      },
+      "visibility": {
+        "name": "Sichtbarkeit"
+      },
+      "pressure": {
+        "name": "Luftdruck"
+      },
+      "sunrise": {
+        "name": "Sonnenaufgang"
+      },
+      "sunset": {
+        "name": "Sonnenuntergang"
+      },
+      "daylight": {
+        "name": "Tageslänge"
+      },
+      "moonrise": {
+        "name": "Mondaufgang"
+      },
+      "moonset": {
+        "name": "Monduntergang"
+      },
+      "moon_visible": {
+        "name": "Mond sichtbar"
+      },
+      "moon_phase": {
+        "name": "Mondphase"
+      },
+      "moon_illumination": {
+        "name": "Mondphase (Beleuchtung)"
+      },
+      "alerts": {
+        "name": "Unwetterwarnungen"
+      },
+      "last_update": {
+        "name": "Letzte Aktualisierung"
+      },
+      "life_dressing": {
+        "name": "Kleidung"
+      },
+      "life_uv": {
+        "name": "UV-Belastung"
+      },
+      "life_wind_chill": {
+        "name": "Windchill"
+      },
+      "life_heat_stroke": {
+        "name": "Hitzschlag"
+      },
+      "life_umbrella": {
+        "name": "Regenschirm"
+      },
+      "life_outdoor": {
+        "name": "Draußen"
+      },
+      "life_driving": {
+        "name": "Fahrsicherheit"
+      },
+      "life_cycling": {
+        "name": "Radfahren"
+      },
+      "life_gardening": {
+        "name": "Gartenarbeit"
+      },
+      "life_hiking": {
+        "name": "Wandern"
+      },
+      "life_running": {
+        "name": "Laufen"
+      },
+      "life_stargazing": {
+        "name": "Sternbeobachtung"
+      },
+      "life_walking": {
+        "name": "Draußen / Spazierengehen"
+      },
+      "life_picnic": {
+        "name": "Picknick"
+      },
+      "tropical_cyclones": {
+        "name": "Tropische Wirbelstürme"
+      },
+      "yesterday_temp_high": {
+        "name": "Höchsttemperatur gestern"
+      },
+      "yesterday_temp_low": {
+        "name": "Tiefsttemperatur gestern"
+      },
+      "yesterday_precipitation": {
+        "name": "Niederschlag gestern"
+      },
+      "yesterday_feels_high": {
+        "name": "Gefühlt max. gestern"
+      },
+      "yesterday_feels_low": {
+        "name": "Gefühlt min. gestern"
+      },
+      "yesterday_wind_max": {
+        "name": "Wind max. gestern"
+      },
+      "yesterday_wind_gust": {
+        "name": "Windböen gestern"
+      },
+      "yesterday_humidity_high": {
+        "name": "Luftfeuchtigkeit max. gestern"
+      },
+      "yesterday_humidity_low": {
+        "name": "Luftfeuchtigkeit min. gestern"
+      },
+      "yesterday_pressure_high": {
+        "name": "Luftdruck max. gestern"
+      },
+      "yesterday_pressure_low": {
+        "name": "Luftdruck min. gestern"
+      },
+      "yesterday_uv_max": {
+        "name": "UV-Index max. gestern"
+      },
+      "yesterday_visibility_max": {
+        "name": "Sichtweite max. gestern"
+      },
+      "yesterday_cloud_cover": {
+        "name": "Bewölkung gestern"
+      },
+      "daily_details": {
+        "name": "Tagesdetails"
+      },
+      "climate_avg_high": {
+        "name": "Klima Ø Höchsttemperatur"
+      },
+      "climate_avg_low": {
+        "name": "Klima Ø Tiefsttemperatur"
+      },
+      "climate_record_high": {
+        "name": "Rekord Höchsttemperatur"
+      },
+      "climate_record_low": {
+        "name": "Rekord Tiefsttemperatur"
+      },
+      "climate_avg_precipitation": {
+        "name": "Klima Ø Niederschlag"
+      },
+      "monthly_forecast": {
+        "name": "Monatsvorhersage"
+      },
+      "nowcast_change": {
+        "name": "Niederschlagswechsel in"
+      }
+    },
+    "binary_sensor": {
+      "alert_active": {
+        "name": "Unwetterwarnung aktiv"
+      },
+      "cyclone_nearby": {
+        "name": "Tropischer Wirbelsturm in der Nähe"
+      }
+    },
+    "image": {
+      "map_temperature": {
+        "name": "Karte Temperatur"
+      },
+      "map_precipitation": {
+        "name": "Karte Niederschlag"
+      },
+      "map_wind": {
+        "name": "Karte Wind"
+      },
+      "map_clouds": {
+        "name": "Karte Wolken"
+      },
+      "map_humidity": {
+        "name": "Karte Luftfeuchtigkeit"
+      },
+      "map_visibility": {
+        "name": "Karte Sichtweite"
+      },
+      "map_pressure": {
+        "name": "Karte Luftdruck"
+      },
+      "map_dew_point": {
+        "name": "Karte Taupunkt"
+      },
+      "map_air_quality": {
+        "name": "Karte Luftqualität"
+      },
+      "map_pollen": {
+        "name": "Karte Pollen"
+      },
+      "map_satellite": {
+        "name": "Karte Satellit"
+      },
+      "map_alerts": {
+        "name": "Karte Unwetter"
+      },
+      "map_winter": {
+        "name": "Karte Winterwetter"
+      },
+      "map_lightning": {
+        "name": "Karte Blitze"
+      },
+      "map_tropical_cyclones": {
+        "name": "Karte Tropischer Zyklon"
+      },
+      "map_radar": {
+        "name": "Karte Regenradar"
+      }
+    },
+    "number": {
+      "map_forecast_hours": {
+        "name": "Karten-Vorhersage"
+      },
+      "map_zoom": {
+        "name": "Karten-Zoom"
+      }
+    },
+    "select": {
+      "cyclone_map_storm": {
+        "name": "Sturm auf der Zyklon-Karte",
+        "state": {
+          "auto": "Automatisch"
+        }
+      }
+    }
+  },
+  "selector": {
+    "cyclone_focus": {
+      "options": {
+        "strongest": "Stärkster Sturm",
+        "nearest": "Nächster Sturm"
+      }
+    }
+  },
+  "issues": {
+    "api_key_invalid": {
+      "title": "MSN Wetter: API-Key abgelehnt",
+      "description": "MSN hat den API-Key von „{name}“ abgelehnt und auf msn.com konnte automatisch kein aktueller Key gefunden werden. Öffne msn.com/wetter im Browser, kopiere in den Entwicklertools (Netzwerk) den Parameter `apikey` der Anfrage `weather/overview` und trage ihn in den Optionen der Integration ein."
+    }
+  },
+  "services": {
+    "set_map_zoom": {
+      "name": "Karten-Zoom setzen",
+      "description": "Gibt einer Wetterkarte einen eigenen Zoom (leer: gemeinsamer Karten-Zoom).",
+      "fields": {
+        "zoom": {
+          "name": "Zoom",
+          "description": "3 = Kontinent, 8 = Region, 11 = lokal"
+        }
+      }
+    }
+  }
+}
