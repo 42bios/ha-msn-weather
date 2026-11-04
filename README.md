@@ -1,7 +1,7 @@
 # MSN Weather for Home Assistant
 
 [![CI](https://github.com/42bios/ha-msn-weather/actions/workflows/validate.yml/badge.svg)](https://github.com/42bios/ha-msn-weather/actions/workflows/validate.yml)
-[![HACS](https://img.shields.io/badge/HACS-Custom-blue.svg)](https://hacs.xyz/docs/faq/custom_repositories)
+[![HACS](https://img.shields.io/badge/HACS-Default-blue.svg)](https://hacs.xyz)
 [![Release](https://img.shields.io/github/v/release/42bios/ha-msn-weather?color=blue)](https://github.com/42bios/ha-msn-weather/releases)
 
 Home Assistant custom integration that brings **MSN Weather** (msn.com/weather) to Home Assistant – everything the
@@ -48,8 +48,8 @@ accordingly.
 
 ## Installation
 
-**HACS:** *HACS → Custom repositories* → URL of this repository, type *Integration* → install "MSN Weather" →
-restart Home Assistant.
+**HACS (recommended):** open HACS, search for "MSN Weather", install it and restart Home Assistant –
+or use the *Open in HACS* button above.
 
 **Manual:** copy `custom_components/msn_weather` to `<config>/custom_components/` and restart Home Assistant.
 
