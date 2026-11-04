@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import secrets
 from pathlib import Path
 
 from homeassistant.components.frontend import add_extra_js_url
@@ -13,7 +12,7 @@ from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
-from .const import CONF_IMAGE_SECRET, CONF_USE_HOME, DOMAIN
+from .const import CONF_USE_HOME, DOMAIN
 from .coordinator import MsnWeatherConfigEntry, MsnWeatherCoordinator
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
@@ -45,11 +44,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: MsnWeatherConfigEntry) -> bool:
-    if CONF_IMAGE_SECRET not in entry.data:
-        # per-entry secret for the stable image access tokens (created once)
-        hass.config_entries.async_update_entry(
-            entry, data={**entry.data, CONF_IMAGE_SECRET: secrets.token_hex(32)}
-        )
     if entry.data.get(CONF_USE_HOME) and (
         entry.data.get(CONF_LATITUDE) != hass.config.latitude
         or entry.data.get(CONF_LONGITUDE) != hass.config.longitude

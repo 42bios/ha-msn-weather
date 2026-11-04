@@ -11,7 +11,7 @@
  *   custom:msn-weather-map-card        – weather map with the correct aspect ratio
  *   strategy custom:msn-weather        – a complete weather view / dashboard
  */
-const CARD_VERSION = "1.21.1";
+const CARD_VERSION = "1.21.2";
 
 /* ----------------------------------------------------------------------- */
 /* i18n                                                                     */
@@ -125,6 +125,8 @@ const COND_COLOR = {
 /* helpers                                                                  */
 /* ----------------------------------------------------------------------- */
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+/** Only plain hex colours from attributes may reach a style attribute. */
+const safeColor = (c) => (/^#[0-9a-f]{3,8}$/i.test(String(c)) ? c : "#888");
 const num = (v) => (v === undefined || v === null || v === "" || isNaN(Number(v)) ? null : Number(v));
 const fmt = (v, d = 0) => (num(v) === null ? "–" : Number(v).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: 0, useGrouping: false }));
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -432,8 +434,8 @@ class MsnBase extends HTMLElement {
   _unit(kind) {
     const w = this._ents && this._ents.weather ? this._hass.states[this._ents.weather] : null;
     const a = (w && w.attributes) || {};
-    return { temp: a.temperature_unit || "°C", wind: a.wind_speed_unit || "km/h", pressure: a.pressure_unit || "hPa",
-             vis: a.visibility_unit || "km", precip: a.precipitation_unit || "mm" }[kind] || "";
+    return esc({ temp: a.temperature_unit || "°C", wind: a.wind_speed_unit || "km/h", pressure: a.pressure_unit || "hPa",
+             vis: a.visibility_unit || "km", precip: a.precipitation_unit || "mm" }[kind] || "");
   }
   /** Sensible decimals per unit (inHg / in need two). */
   _dec(kind) {
@@ -493,7 +495,7 @@ class MsnTiles extends MsnBase {
       ? `<div class="head">${esc(this._config.title || this.t("details"))} <small>${timeStr(now.toISOString(), this._hass, this._tz())}</small></div>`
       : "";
     const body = tiles.map((k) => (this["tile_" + k] ? this._tile(k, this["tile_" + k]()) : "")).join("");
-    this.shadowRoot.innerHTML = `<style>${this._css()}</style><ha-card>${head}<div class="grid" style="${this._config.tile_min_width ? `--msn-tile-min:${this._config.tile_min_width}px` : ""}">${body}</div></ha-card>`;
+    this.shadowRoot.innerHTML = `<style>${this._css()}</style><ha-card>${head}<div class="grid" style="${this._config.tile_min_width ? `--msn-tile-min:${num(this._config.tile_min_width) || 230}px` : ""}">${body}</div></ha-card>`;
     this.shadowRoot.querySelectorAll(".tile, .hat").forEach((el) => el.addEventListener("click", () => this.more(TILE_ENTITY[el.dataset.k])));
   }
 
@@ -1241,7 +1243,7 @@ class MsnWeatherHourlyCard extends MsnBase {
       const scale = this._tab === "uv" ? 11 : this._tab === "aqi" ? 300 : this._tab === "precipitation" ? (this._unit("precip") === "in" ? 0.4 : 10) : null;
       const pct = scale && v1 !== null ? clamp(v1 / scale, 0.05, 1) : null;
       const has = d.date >= today;
-      return `<div class="day ${d.date === this._day ? "on" : ""} ${has ? "" : "past"}" data-d="${d.date}">
+      return `<div class="day ${d.date === this._day ? "on" : ""} ${has ? "" : "past"}" data-d="${esc(d.date)}">
         <div class="dh"><b>${dt.getDate()}</b><span>${esc(lbl)}</span></div>
         <div class="dv"><div><span class="v1">${fmt1(v1)}</span><span class="u">${esc((u2 === undefined ? u1 : u1) || "")}</span></div>
           ${k2 ? `<div class="v2">${v2 === null ? "–" : fmt(v2, 0)}${esc(u2 !== undefined ? u2 : u1 || "")}</div>` : ""}</div>
@@ -2014,8 +2016,8 @@ class MsnWeatherMonthlyCard extends MsnBase {
     const recHY = this.attr("climate_record_high", "year"), recLY = this.attr("climate_record_low", "year");
     const since = this.attr("climate_avg_high", "since");
     const stat = (icon, color, label, value) => this._ha
-      ? `<div class="st" style="--c:${color}"><span class="ic"><ha-icon icon="${icon}"></ha-icon></span><span class="nm"><span>${label}</span><b>${value}</b></span></div>`
-      : `<div><span>${label}</span><b>${value}</b></div>`;
+      ? `<div class="st" style="--c:${color}"><span class="ic"><ha-icon icon="${icon}"></ha-icon></span><span class="nm"><span>${esc(label)}</span><b>${esc(value)}</b></span></div>`
+      : `<div><span>${esc(label)}</span><b>${esc(value)}</b></div>`;
     const haCss = !this._ha ? "" : `
       .cal { gap: 0 !important; }
       .wdr { gap: 0; border-bottom: 1px solid var(--divider-color, rgba(127,127,127,.25)); padding-bottom: 6px; margin-bottom: 0; }
@@ -2168,15 +2170,15 @@ class MsnWeatherMapCard extends MsnBase {
     if (!lg || this._config.show_legend === false) return "";
     if (this._legendCollapsed) return `<div class="lgd mini" title="Legende"><ha-icon icon="mdi:palette-outline"></ha-icon></div>`;
     if (lg.type === "levels") {
-      return `<div class="lgd lv">${lg.items.map((it) => `<span><i style="background:${it.color}"></i>${esc(it.label)}</span>`).join("")}</div>`;
+      return `<div class="lgd lv">${lg.items.map((it) => `<span><i style="background:${safeColor(it.color)}"></i>${esc(it.label)}</span>`).join("")}</div>`;
     }
     if (lg.type === "swatches") {
-      return `<div class="lgd sw">${lg.rows.map((r) => `<div class="row"><span>${esc(r.label)}</span>${r.colors.map((c) => `<i style="background:${c}"></i>`).join("")}</div>`).join("")}
+      return `<div class="lgd sw">${lg.rows.map((r) => `<div class="row"><span>${esc(r.label)}</span>${r.colors.map((c) => `<i style="background:${safeColor(c)}"></i>`).join("")}</div>`).join("")}
         <div class="row ends"><span></span><em>${esc(lg.low)}</em><em>${esc(lg.high)}</em></div></div>`;
     }
     return `<div class="lgd gr">${lg.unit ? `<span class="u">${esc(lg.unit)}</span>` : ""}<div class="scale">
-      <div class="bar" style="background:linear-gradient(90deg, ${lg.stops.join(", ")})"></div>
-      <div class="ticks">${lg.ticks.map(([p, t]) => `<span style="left:${p * 100}%">${esc(t)}</span>`).join("")}</div></div></div>`;
+      <div class="bar" style="background:linear-gradient(90deg, ${lg.stops.map(safeColor).join(", ")})"></div>
+      <div class="ticks">${lg.ticks.map(([p, t]) => `<span style="left:${(num(p) || 0) * 100}%">${esc(t)}</span>`).join("")}</div></div></div>`;
   }
 
 
@@ -2203,7 +2205,10 @@ class MsnWeatherMapCard extends MsnBase {
     const n = this._ents.map_forecast_hours ? this._hass.states[this._ents.map_forecast_hours] : null;
     const sel = this._ents.cyclone_map_storm ? this._hass.states[this._ents.cyclone_map_storm] : null;
     const zm = this._ents.map_zoom ? this._hass.states[this._ents.map_zoom] : null;
-    return (zm ? zm.state : "") + (s ? s.state + JSON.stringify(s.attributes.width) : "") + (n ? n.state : "") + (sel ? sel.state + sel.attributes.options : "");
+    // after a failed load, re-render as soon as Home Assistant publishes a new image URL (rotated token)
+    const cur = s ? s.attributes.entity_picture : "";
+    const pic = this._failedPic && cur !== this._failedPic ? cur : "";
+    return (zm ? zm.state : "") + (s ? s.state + JSON.stringify(s.attributes.width) : "") + (n ? n.state : "") + (sel ? sel.state + sel.attributes.options : "") + pic;
   }
   _render() {
     if (!this._hass) return;
@@ -2301,7 +2306,7 @@ class MsnWeatherMapCard extends MsnBase {
       .cap { position: absolute; left: 10px; bottom: 10px; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
              background: color-mix(in srgb, var(--card-background-color, #fff) 85%, transparent); color: var(--primary-text-color); pointer-events: none; }
     </style><ha-card><div class="img"><div class="ph load"><ha-icon icon="mdi:map-outline"></ha-icon><span>${esc(this._name(s))}</span></div>
-      ${pic ? `<img src="${pic}" alt=""><canvas></canvas>` : ""}${titleHtml}${legendHtml}${chips}${zoomHtml}</div></ha-card>`;
+      ${pic ? `<img src="${esc(pic)}" alt=""><canvas></canvas>` : ""}${titleHtml}${legendHtml}${chips}${zoomHtml}</div></ha-card>`;
     this.shadowRoot.querySelectorAll(".zoom button").forEach((el) => el.addEventListener("click", (ev) => {
       ev.stopPropagation();
       const value = clamp((zoom || 8) + Number(el.dataset.z), 3, 11);
@@ -2313,8 +2318,8 @@ class MsnWeatherMapCard extends MsnBase {
     }));
     const img = this.shadowRoot.querySelector(".img img");
     if (img) {
-      let tries = 0;
       img.addEventListener("load", () => {
+        this._failedPic = null; this._sig = this._signature();
         img.classList.add("ok"); this.shadowRoot.querySelector(".ph").style.display = "none";
         this._initPlayer(img.currentSrc || img.src, s).then((ok) => {
           if (ok) { clearInterval(this._playTimer); img.style.visibility = "hidden"; }
@@ -2322,9 +2327,9 @@ class MsnWeatherMapCard extends MsnBase {
         });
       });
       img.addEventListener("error", () => {
-        // the map may still be rendering on the server – retry a few times
-        if (tries++ < 6) setTimeout(() => { if (img.isConnected) img.src = `${pic}&r=${tries}`; }, 4000);
-        else this.shadowRoot.querySelector(".ph").classList.remove("load");
+        // no retries with the same URL: an expired token would only produce failed logins
+        this._failedPic = s.attributes.entity_picture; this._sig = this._signature();
+        this.shadowRoot.querySelector(".ph").classList.remove("load");
       });
     }
     this.shadowRoot.querySelector(".img").addEventListener("click", () => {

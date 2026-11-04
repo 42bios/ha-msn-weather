@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
-import hmac
 import logging
 from typing import Any
 
@@ -18,7 +16,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from .const import (
-    CONF_IMAGE_SECRET,
     CONF_MAP_FRAME_MS,
     CONF_MAP_FRAMES,
     CONF_MAP_HIRES,
@@ -152,14 +149,6 @@ class MsnMapImage(MsnWeatherEntity, ImageEntity):
     ) -> None:
         MsnWeatherEntity.__init__(self, coordinator, f"map_{key}")
         ImageEntity.__init__(self, hass)
-        # Stable access token: survives restarts, so dashboards/apps that are still open
-        # keep loading the map instead of producing failed logins (and IP bans).
-        secret = coordinator.config_entry.data.get(CONF_IMAGE_SECRET, coordinator.config_entry.entry_id)
-        self._stable_token = hmac.new(
-            secret.encode(), self._attr_unique_id.encode(), hashlib.sha256
-        ).hexdigest()
-        self.access_tokens.clear()
-        self.access_tokens.append(self._stable_token)
         self._key = key
         self._renderer = renderer
         self._attr_translation_key = f"map_{key}"
@@ -172,16 +161,6 @@ class MsnMapImage(MsnWeatherEntity, ImageEntity):
         self._task: asyncio.Task | None = None
         self._zoom: int | None = None  # fixed zoom of this map (map card setting)
         self._requested = False
-
-    @callback
-    def async_update_token(self) -> None:
-        """Keep the stable token instead of rotating a random one every few minutes."""
-        token = getattr(self, "_stable_token", None)
-        if token is None:  # called from ImageEntity.__init__ before our token exists
-            super().async_update_token()
-            return
-        if not self.access_tokens or self.access_tokens[-1] != token:
-            self.access_tokens.append(token)
 
     @callback
     def _handle_coordinator_update(self) -> None:

@@ -237,9 +237,6 @@ The integration decodes the tiles, interpolates them, applies MSN's color scales
 tiles (terrain shading, borders, labels). The radar is a vector format: MSN publishes precipitation polygons
 per tile every 4 minutes (observations and a ~3 hour nowcast), which the integration draws with MSN's colors.
 
-Map images use stable access tokens (derived from a per-entry secret), so dashboards and the companion app that
-stay open during a Home Assistant restart keep loading the maps instead of producing failed logins.
-
 ## Blueprints
 
 Ready-made automations in [`blueprints/automation/msn_weather`](blueprints/automation/msn_weather) – import them
