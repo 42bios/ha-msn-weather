@@ -11,7 +11,7 @@
  *   custom:msn-weather-map-card        – weather map with the correct aspect ratio
  *   strategy custom:msn-weather        – a complete weather view / dashboard
  */
-const CARD_VERSION = "1.21.2";
+const CARD_VERSION = "1.21.3";
 
 /* ----------------------------------------------------------------------- */
 /* i18n                                                                     */
