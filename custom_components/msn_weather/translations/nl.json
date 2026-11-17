@@ -11,6 +11,16 @@
           "language": "Taal van de teksten",
           "use_home_location": "Locatie van Home Assistant gebruiken"
         }
+      },
+      "reconfigure": {
+        "title": "Locatie of naam wijzigen",
+        "description": "Standaard wordt de locatie van je Home Assistant-installatie gebruikt (en gevolgd als die verandert). Zet dit uit om een andere plek op de kaart te kiezen – of plak een MSN Weer-URL, die heeft voorrang.",
+        "data": {
+          "name": "Naam",
+          "location": "Locatie (alleen zonder de Home Assistant-locatie)",
+          "msn_url": "MSN Weer-URL (optioneel)",
+          "use_home_location": "Locatie van Home Assistant gebruiken"
+        }
       }
     },
     "error": {
@@ -20,7 +30,7 @@
     },
     "abort": {
       "already_configured": "Deze locatie is al geconfigureerd.",
-      "reauth_use_options": "Werk de API-sleutel bij in de opties van de integratie."
+      "reconfigure_successful": "De locatie en naam zijn bijgewerkt."
     }
   },
   "options": {
@@ -357,7 +367,21 @@
   "issues": {
     "api_key_invalid": {
       "title": "MSN Weer: API-sleutel geweigerd",
-      "description": "MSN heeft de API-sleutel van \"{name}\" geweigerd en op msn.com kon niet automatisch een geldige sleutel worden gevonden. Open msn.com/weer in een browser, kopieer via de ontwikkelaarstools (tabblad Netwerk) de parameter `apikey` van het verzoek `weather/overview` en vul die in bij de opties van de integratie."
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "MSN Weer: API-sleutel geweigerd",
+            "description": "MSN heeft de API-sleutel van \"{name}\" geweigerd en op msn.com kon niet automatisch een geldige sleutel worden gevonden. Open msn.com/weer in een browser, kopieer via de ontwikkelaarstools (tabblad Netwerk) de parameter `apikey` van het verzoek `weather/overview` en vul die hier in.",
+            "data": {
+              "api_key": "API-sleutel"
+            }
+          }
+        },
+        "error": {
+          "invalid_auth": "MSN heeft de API-sleutel geweigerd.",
+          "cannot_connect": "Kan geen verbinding maken met MSN Weer."
+        }
+      }
     }
   },
   "services": {

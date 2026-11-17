@@ -22,6 +22,8 @@ from custom_components.msn_weather.const import (
     DOMAIN,
 )
 from custom_components.msn_weather.coordinator import STORAGE_KEY
+from custom_components.msn_weather.repairs import async_create_fix_flow
+from homeassistant.data_entry_flow import FlowResultType
 
 from .conftest import LAT, LON
 
@@ -159,6 +161,45 @@ async def test_api_key_rejected(hass: HomeAssistant, mock_client, mock_frontend)
         entry = await _setup(hass)
     assert entry.state is ConfigEntryState.SETUP_RETRY
     assert ir.async_get(hass).async_get_issue(DOMAIN, f"api_key_{entry.entry_id}") is not None
+
+
+async def test_api_key_repair_flow(hass: HomeAssistant, mock_client, mock_frontend, hass_storage) -> None:
+    """The repair issue asks for a key, checks it and reloads the entry with it."""
+    good = mock_client.async_get.side_effect
+    mock_client.async_get.side_effect = MsnWeatherAuthError("HTTP 401")
+    with patch(
+        "custom_components.msn_weather.coordinator.async_discover_api_key",
+        AsyncMock(return_value=None),
+    ):
+        entry = await _setup(hass, {CONF_API_KEY: "my-old-key", CONF_CYCLONE_RADIUS: 100})
+    issue_id = f"api_key_{entry.entry_id}"
+    issue = ir.async_get(hass).async_get_issue(DOMAIN, issue_id)
+    assert issue.is_fixable
+    assert issue.data == {"entry_id": entry.entry_id}
+
+    flow = await async_create_fix_flow(hass, issue_id, issue.data)
+    flow.hass = hass
+    result = await flow.async_step_init()
+    assert result["type"] is FlowResultType.FORM
+    assert result["description_placeholders"] == {"name": "Upper East Side"}
+
+    with patch("custom_components.msn_weather.repairs.MsnWeatherClient") as cls:
+        cls.return_value.async_get = AsyncMock(side_effect=MsnWeatherAuthError("HTTP 401"))
+        result = await flow.async_step_init({CONF_API_KEY: "wrong-key"})
+        assert result["errors"] == {CONF_API_KEY: "invalid_auth"}
+
+        cls.return_value.async_get = AsyncMock(return_value=None)
+        mock_client.async_get.side_effect = good
+        result = await flow.async_step_init({CONF_API_KEY: " new-key "})
+        await hass.async_block_till_done()
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert cls.call_args.args[4] == "new-key"
+    assert hass_storage[STORAGE_KEY]["data"] == {"api_key": "new-key"}
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
+    # the rejected key is gone from the options, everything else stays
+    assert entry.options == {CONF_CYCLONE_RADIUS: 100}
+    assert entry.state is ConfigEntryState.LOADED
+    assert mock_client.client_cls.call_args.args[4] == "new-key"
 
 
 async def test_follows_home_location(hass: HomeAssistant, mock_client, mock_frontend) -> None:

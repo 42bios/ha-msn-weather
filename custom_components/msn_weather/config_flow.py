@@ -6,7 +6,7 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult, OptionsFlow
+from homeassistant.config_entries import ConfigEntryState, ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.const import CONF_LATITUDE, CONF_LOCATION, CONF_LONGITUDE, CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -83,21 +83,7 @@ class MsnWeatherConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            name = user_input.get(CONF_NAME)
-            url = (user_input.get(CONF_MSN_URL) or "").strip()
-            if url:
-                parsed = parse_msn_url(url)
-                if parsed is None:
-                    errors[CONF_MSN_URL] = "invalid_url"
-                else:
-                    lat, lon, place = parsed
-                    name = name or place
-            elif user_input.get(CONF_USE_HOME, True):
-                lat, lon = self.hass.config.latitude, self.hass.config.longitude
-            else:
-                loc = user_input.get(CONF_LOCATION) or {}
-                lat = loc.get(CONF_LATITUDE, self.hass.config.latitude)
-                lon = loc.get(CONF_LONGITUDE, self.hass.config.longitude)
+            name, lat, lon, use_home = self._location(user_input, errors)
 
             if not errors:
                 language = user_input[CONF_LANGUAGE]
@@ -122,7 +108,7 @@ class MsnWeatherConfigFlow(ConfigFlow, domain=DOMAIN):
                             CONF_LONGITUDE: lon,
                             CONF_LANGUAGE: language,
                             # follow the Home Assistant location (also when it changes later)
-                            CONF_USE_HOME: not url and user_input.get(CONF_USE_HOME, True),
+                            CONF_USE_HOME: use_home,
                         },
                     )
 
@@ -151,9 +137,94 @@ class MsnWeatherConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_reauth(self, entry_data: dict[str, Any]) -> ConfigFlowResult:
-        """API key rejected: point the user at the options."""
-        return self.async_abort(reason="reauth_use_options")
+    def _location(
+        self, user_input: dict[str, Any], errors: dict[str, str]
+    ) -> tuple[str | None, float, float, bool]:
+        """Name, coordinates and "follow the Home Assistant location" from the form."""
+        name = user_input.get(CONF_NAME)
+        lat, lon = self.hass.config.latitude, self.hass.config.longitude
+        url = (user_input.get(CONF_MSN_URL) or "").strip()
+        if url:
+            parsed = parse_msn_url(url)
+            if parsed is None:
+                errors[CONF_MSN_URL] = "invalid_url"
+            else:
+                lat, lon, place = parsed
+                name = name or place
+        elif not user_input.get(CONF_USE_HOME, True):
+            loc = user_input.get(CONF_LOCATION) or {}
+            lat = loc.get(CONF_LATITUDE, lat)
+            lon = loc.get(CONF_LONGITUDE, lon)
+        return name, lat, lon, not url and bool(user_input.get(CONF_USE_HOME, True))
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Change the location or the name of an entry; entities and their ids stay."""
+        entry = self._get_reconfigure_entry()
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            name, lat, lon, use_home = self._location(user_input, errors)
+            if not errors:
+                language = entry.data.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
+                client = MsnWeatherClient(
+                    async_get_clientsession(self.hass), lat, lon, language,
+                    entry.options.get(CONF_API_KEY) or automatic_api_key(self.hass),
+                )
+                try:
+                    data = await client.async_get()
+                except MsnWeatherAuthError:
+                    errors["base"] = "invalid_auth"
+                except MsnWeatherError:
+                    errors["base"] = "cannot_connect"
+                else:
+                    unique_id = f"{lat:.3f}_{lon:.3f}_{language}"
+                    if any(
+                        other.unique_id == unique_id and other.entry_id != entry.entry_id
+                        for other in self._async_current_entries()
+                    ):
+                        return self.async_abort(reason="already_configured")
+                    title = name or data.location.get("name") or entry.title
+                    # a loaded entry reloads itself through its update listener
+                    reloads_itself = entry.state is ConfigEntryState.LOADED
+                    changed = self.hass.config_entries.async_update_entry(
+                        entry,
+                        unique_id=unique_id,
+                        title=title,
+                        data={
+                            **entry.data,
+                            CONF_NAME: title,
+                            CONF_LATITUDE: lat,
+                            CONF_LONGITUDE: lon,
+                            CONF_USE_HOME: use_home,
+                        },
+                    )
+                    if not (changed and reloads_itself):
+                        self.hass.config_entries.async_schedule_reload(entry.entry_id)
+                    return self.async_abort(reason="reconfigure_successful")
+
+        schema = vol.Schema(
+            {
+                vol.Optional(CONF_NAME): TextSelector(),
+                vol.Required(CONF_USE_HOME): BooleanSelector(),
+                vol.Optional(CONF_LOCATION): LocationSelector(),
+                vol.Optional(CONF_MSN_URL): TextSelector(),
+            }
+        )
+        current = {
+            CONF_NAME: entry.data.get(CONF_NAME) or entry.title,
+            CONF_USE_HOME: bool(entry.data.get(CONF_USE_HOME)),
+            CONF_LOCATION: {
+                CONF_LATITUDE: entry.data[CONF_LATITUDE],
+                CONF_LONGITUDE: entry.data[CONF_LONGITUDE],
+            },
+        }
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=self.add_suggested_values_to_schema(schema, user_input or current),
+            errors=errors,
+        )
 
     @staticmethod
     @callback

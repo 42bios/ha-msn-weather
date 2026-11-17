@@ -11,6 +11,16 @@
           "language": "Sprache der Texte",
           "use_home_location": "Standort von Home Assistant verwenden"
         }
+      },
+      "reconfigure": {
+        "title": "Standort oder Name ändern",
+        "description": "Standardmäßig wird der Standort deiner Home-Assistant-Installation verwendet (und bei Änderungen übernommen). Schalte das aus, um einen anderen Ort auf der Karte zu wählen – oder füge eine MSN-Wetter-URL ein, sie hat Vorrang.",
+        "data": {
+          "name": "Name",
+          "location": "Ort (nur ohne Home-Assistant-Standort)",
+          "msn_url": "MSN-Wetter-URL (optional)",
+          "use_home_location": "Standort von Home Assistant verwenden"
+        }
       }
     },
     "error": {
@@ -20,7 +30,7 @@
     },
     "abort": {
       "already_configured": "Dieser Ort ist bereits eingerichtet.",
-      "reauth_use_options": "Bitte den API-Schlüssel in den Optionen der Integration aktualisieren."
+      "reconfigure_successful": "Standort und Name wurden aktualisiert."
     }
   },
   "options": {
@@ -357,7 +367,21 @@
   "issues": {
     "api_key_invalid": {
       "title": "MSN Wetter: API-Key abgelehnt",
-      "description": "MSN hat den API-Key von „{name}“ abgelehnt und auf msn.com konnte automatisch kein aktueller Key gefunden werden. Öffne msn.com/wetter im Browser, kopiere in den Entwicklertools (Netzwerk) den Parameter `apikey` der Anfrage `weather/overview` und trage ihn in den Optionen der Integration ein."
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "MSN Wetter: API-Key abgelehnt",
+            "description": "MSN hat den API-Key von „{name}“ abgelehnt und auf msn.com konnte automatisch kein aktueller Key gefunden werden. Öffne msn.com/wetter im Browser, kopiere in den Entwicklertools (Netzwerk) den Parameter `apikey` der Anfrage `weather/overview` und trage ihn hier ein.",
+            "data": {
+              "api_key": "API-Key"
+            }
+          }
+        },
+        "error": {
+          "invalid_auth": "MSN hat den API-Schlüssel abgelehnt.",
+          "cannot_connect": "Verbindung zu MSN Wetter fehlgeschlagen."
+        }
+      }
     }
   },
   "services": {

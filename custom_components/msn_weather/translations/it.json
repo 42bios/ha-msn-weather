@@ -11,6 +11,16 @@
           "language": "Lingua dei testi",
           "use_home_location": "Usa la posizione di Home Assistant"
         }
+      },
+      "reconfigure": {
+        "title": "Modifica luogo o nome",
+        "description": "Per impostazione predefinita viene usata la posizione della tua installazione di Home Assistant (e aggiornata se cambia). Disattiva l'opzione per scegliere un altro luogo sulla mappa – oppure incolla un URL di MSN Meteo, che ha la precedenza.",
+        "data": {
+          "name": "Nome",
+          "location": "Posizione (solo senza la posizione di Home Assistant)",
+          "msn_url": "URL di MSN Meteo (facoltativo)",
+          "use_home_location": "Usa la posizione di Home Assistant"
+        }
       }
     },
     "error": {
@@ -20,7 +30,7 @@
     },
     "abort": {
       "already_configured": "Questo luogo è già configurato.",
-      "reauth_use_options": "Aggiorna la chiave API nelle opzioni dell'integrazione."
+      "reconfigure_successful": "Luogo e nome sono stati aggiornati."
     }
   },
   "options": {
@@ -357,7 +367,21 @@
   "issues": {
     "api_key_invalid": {
       "title": "MSN Meteo: chiave API rifiutata",
-      "description": "MSN ha rifiutato la chiave API di \"{name}\" e su msn.com non è stato possibile trovare automaticamente una chiave valida. Apri msn.com/meteo nel browser, copia dagli strumenti per sviluppatori (scheda Rete) il parametro `apikey` della richiesta `weather/overview` e inseriscilo nelle opzioni dell'integrazione."
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "MSN Meteo: chiave API rifiutata",
+            "description": "MSN ha rifiutato la chiave API di \"{name}\" e su msn.com non è stato possibile trovare automaticamente una chiave valida. Apri msn.com/meteo nel browser, copia dagli strumenti per sviluppatori (scheda Rete) il parametro `apikey` della richiesta `weather/overview` e inseriscilo qui.",
+            "data": {
+              "api_key": "Chiave API"
+            }
+          }
+        },
+        "error": {
+          "invalid_auth": "MSN ha rifiutato la chiave API.",
+          "cannot_connect": "Impossibile connettersi a MSN Meteo."
+        }
+      }
     }
   },
   "services": {

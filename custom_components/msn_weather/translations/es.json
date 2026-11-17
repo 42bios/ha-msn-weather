@@ -11,6 +11,16 @@
           "language": "Idioma de los textos",
           "use_home_location": "Usar la ubicación de Home Assistant"
         }
+      },
+      "reconfigure": {
+        "title": "Cambiar la ubicación o el nombre",
+        "description": "De forma predeterminada se usa la ubicación de tu instalación de Home Assistant (y se sigue si cambia). Desactívalo para elegir otro lugar en el mapa, o pega una URL de MSN El Tiempo, que tiene prioridad.",
+        "data": {
+          "name": "Nombre",
+          "location": "Ubicación (solo sin la ubicación de Home Assistant)",
+          "msn_url": "URL de MSN El Tiempo (opcional)",
+          "use_home_location": "Usar la ubicación de Home Assistant"
+        }
       }
     },
     "error": {
@@ -20,7 +30,7 @@
     },
     "abort": {
       "already_configured": "Esta ubicación ya está configurada.",
-      "reauth_use_options": "Actualiza la clave API en las opciones de la integración."
+      "reconfigure_successful": "La ubicación y el nombre se han actualizado."
     }
   },
   "options": {
@@ -357,7 +367,21 @@
   "issues": {
     "api_key_invalid": {
       "title": "MSN El Tiempo: clave API rechazada",
-      "description": "MSN rechazó la clave API de \"{name}\" y no se pudo encontrar automáticamente una clave válida en msn.com. Abre msn.com/eltiempo en el navegador, copia desde las herramientas de desarrollo (pestaña Red) el parámetro `apikey` de la solicitud `weather/overview` e introdúcelo en las opciones de la integración."
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "MSN El Tiempo: clave API rechazada",
+            "description": "MSN rechazó la clave API de \"{name}\" y no se pudo encontrar automáticamente una clave válida en msn.com. Abre msn.com/eltiempo en el navegador, copia desde las herramientas de desarrollo (pestaña Red) el parámetro `apikey` de la solicitud `weather/overview` e introdúcelo aquí.",
+            "data": {
+              "api_key": "Clave API"
+            }
+          }
+        },
+        "error": {
+          "invalid_auth": "MSN rechazó la clave API.",
+          "cannot_connect": "No se pudo conectar con MSN El Tiempo."
+        }
+      }
     }
   },
   "services": {

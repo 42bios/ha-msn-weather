@@ -11,6 +11,16 @@
           "language": "Text language",
           "use_home_location": "Use the Home Assistant location"
         }
+      },
+      "reconfigure": {
+        "title": "Change location or name",
+        "description": "By default the location of your Home Assistant installation is used (and followed if it changes). Switch it off to pick another place on the map – or paste an MSN weather URL, which takes precedence.",
+        "data": {
+          "name": "Name",
+          "location": "Location (only when not using the Home Assistant location)",
+          "msn_url": "MSN weather URL (optional)",
+          "use_home_location": "Use the Home Assistant location"
+        }
       }
     },
     "error": {
@@ -20,7 +30,7 @@
     },
     "abort": {
       "already_configured": "This location is already configured.",
-      "reauth_use_options": "Please update the API key in the integration options."
+      "reconfigure_successful": "The location and name were updated."
     }
   },
   "options": {
@@ -357,7 +367,21 @@
   "issues": {
     "api_key_invalid": {
       "title": "MSN Weather: API key rejected",
-      "description": "MSN rejected the API key of \"{name}\" and no current key could be found on msn.com automatically. Open msn.com/weather in a browser, copy the `apikey` parameter of the `weather/overview` request from the developer tools (network tab) and enter it in the integration options."
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "MSN Weather: API key rejected",
+            "description": "MSN rejected the API key of \"{name}\" and no current key could be found on msn.com automatically. Open msn.com/weather in a browser, copy the `apikey` parameter of the `weather/overview` request from the developer tools (network tab) and enter it here.",
+            "data": {
+              "api_key": "API key"
+            }
+          }
+        },
+        "error": {
+          "invalid_auth": "MSN rejected the API key.",
+          "cannot_connect": "Failed to connect to MSN weather."
+        }
+      }
     }
   },
   "services": {

@@ -97,6 +97,84 @@ async def test_options_flow(hass: HomeAssistant, flow_client, mock_frontend) -> 
         assert entry.options.get(CONF_API_KEY) == stored
 
 
+def _entry(hass: HomeAssistant, **kwargs) -> MockConfigEntry:
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Upper East Side",
+        unique_id="40.774_-73.957_en-us",
+        data={CONF_NAME: "Upper East Side", CONF_LATITUDE: LAT, CONF_LONGITUDE: LON, CONF_LANGUAGE: "en-us"},
+        **kwargs,
+    )
+    entry.add_to_hass(hass)
+    return entry
+
+
+async def test_reconfigure(hass: HomeAssistant, flow_client, mock_frontend) -> None:
+    entry = _entry(hass, options={CONF_CYCLONE_RADIUS: 100})
+    result = await entry.start_reconfigure_flow(hass)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {
+            CONF_NAME: "Midtown",
+            CONF_USE_HOME: False,
+            CONF_LOCATION: {CONF_LATITUDE: 40.75, CONF_LONGITUDE: -73.98},
+        },
+    )
+    await hass.async_block_till_done()
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.title == "Midtown"
+    assert entry.unique_id == "40.750_-73.980_en-us"
+    assert entry.data == {
+        CONF_NAME: "Midtown", CONF_LATITUDE: 40.75, CONF_LONGITUDE: -73.98,
+        CONF_LANGUAGE: "en-us", CONF_USE_HOME: False,
+    }
+    # the options are untouched
+    assert entry.options == {CONF_CYCLONE_RADIUS: 100}
+
+
+async def test_reconfigure_home_location(hass: HomeAssistant, flow_client, mock_frontend) -> None:
+    hass.config.latitude, hass.config.longitude = 41.0, -73.0
+    entry = _entry(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {CONF_NAME: "Home", CONF_USE_HOME: True}
+    )
+    await hass.async_block_till_done()
+    assert result["reason"] == "reconfigure_successful"
+    assert (entry.data[CONF_LATITUDE], entry.data[CONF_LONGITUDE]) == (41.0, -73.0)
+    assert entry.data[CONF_USE_HOME] is True
+
+
+async def test_reconfigure_errors(hass: HomeAssistant, flow_client, mock_frontend) -> None:
+    entry = _entry(hass)
+    other = MockConfigEntry(
+        domain=DOMAIN, title="Midtown", unique_id="40.750_-73.980_en-us",
+        data={CONF_NAME: "Midtown", CONF_LATITUDE: 40.75, CONF_LONGITUDE: -73.98, CONF_LANGUAGE: "en-us"},
+    )
+    other.add_to_hass(hass)
+    midtown = {CONF_USE_HOME: False, CONF_LOCATION: {CONF_LATITUDE: 40.75, CONF_LONGITUDE: -73.98}}
+
+    result = await entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {CONF_USE_HOME: False, CONF_MSN_URL: "https://www.msn.com/en-us/weather"}
+    )
+    assert result["errors"] == {CONF_MSN_URL: "invalid_url"}
+
+    flow_client.async_get.side_effect = MsnWeatherError("HTTP 500")
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], midtown)
+    assert result["errors"] == {"base": "cannot_connect"}
+
+    # another entry already uses that place
+    flow_client.async_get.side_effect = None
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], midtown)
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "already_configured"
+    assert entry.data[CONF_LATITUDE] == LAT
+
+
 def vol_undefined():
     import voluptuous as vol
 

@@ -139,8 +139,9 @@ class MsnWeatherCoordinator(DataUpdateCoordinator[MsnWeatherData]):
         except MsnWeatherAuthError as err:
             ir.async_create_issue(
                 self.hass, DOMAIN, f"api_key_{self.config_entry.entry_id}",
-                is_fixable=False, severity=ir.IssueSeverity.ERROR,
+                is_fixable=True, severity=ir.IssueSeverity.ERROR,
                 translation_key="api_key_invalid",
+                data={"entry_id": self.config_entry.entry_id},
                 translation_placeholders={"name": self.config_entry.title},
             )
             raise UpdateFailed("MSN rejected the API key and no new key could be found") from err

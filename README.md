@@ -50,10 +50,12 @@ The button opens the Marketplace on Home Assistant 2026.11 or newer, and HACS on
 2. Keep the location of your Home Assistant installation, pick another place on the map, or paste an MSN weather URL.
 3. Optional: adjust language, update interval, maps and the tropical cyclone radius in the integration options.
 
+Location and name can be changed later with `Reconfigure` in the menu of the entry.
+
 Units and language follow your Home Assistant settings.
 
 ### API key
-MSN's web API is unofficial and may change at any time. The integration reads the current API key from msn.com automatically. If that fails, a repair issue appears and you can enter a key in the integration options: you find it in your browser's developer tools on msn.com/weather (network tab, request `weather/overview`, parameter `apikey`).
+MSN's web API is unofficial and may change at any time. The integration reads the current API key from msn.com automatically. If that fails, a repair issue appears and asks for a key: you find it in your browser's developer tools on msn.com/weather (network tab, request `weather/overview`, parameter `apikey`).
 
 ## Dashboard
 

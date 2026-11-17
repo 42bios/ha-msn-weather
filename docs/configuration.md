@@ -5,6 +5,8 @@
 - By default the **location of your Home Assistant installation** is used – and followed if you change it later.
 - Optionally switch that off and pick another place on the map, or paste an MSN weather URL (it takes precedence),
   e.g. `https://www.msn.com/en-us/weather/forecast/in-New-York,NY?loc=eyJsIjoi...`
+- Location and name can be changed later: *Settings → Devices & services → MSN Weather → ⋮ → Reconfigure*.
+  The entities and their entity IDs stay as they are.
 
 The options of the integration offer:
 
@@ -20,7 +22,7 @@ with *metric* °C, km/h, hPa, km and mm – values, MSN texts, map legends and c
 
 > ⚠️ This is an unofficial API and Microsoft may change it at any time. When MSN rotates its public web API key,
 > the integration reads the current key from msn.com automatically. If that fails, a repair issue appears
-> (*Settings → Repairs*) and you can enter a key in the integration options – you find it in your browser's
+> (*Settings → Repairs*) that asks for a key, checks it and uses it for all entries – you find it in your browser's
 > developer tools on msn.com/weather (network tab → request `weather/overview` → parameter `apikey`).
 
 ## Languages and diagnostics
