@@ -1,6 +1,11 @@
 {
   "domain": "msn_weather",
   "name": "MSN Weather",
+  "categories": [
+    "weather_alerts.forecasts",
+    "weather_alerts.air_quality_pollen",
+    "weather_alerts.public_warnings"
+  ],
   "codeowners": [
     "@42bios"
   ],

@@ -1,4 +1,4 @@
-"""All translations have exactly the keys of strings.json."""
+"""All translations have exactly the keys of the English translation."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ def _keys(obj, prefix=""):
         yield prefix.rstrip(".")
 
 
-STRINGS = set(_keys(json.loads((BASE / "strings.json").read_text())))
+STRINGS = set(_keys(json.loads((BASE / "translations" / "en.json").read_text())))
 
 
 @pytest.mark.parametrize("path", sorted((BASE / "translations").glob("*.json")), ids=lambda p: p.stem)
