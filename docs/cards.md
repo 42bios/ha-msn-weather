@@ -63,4 +63,27 @@ fit: cover                # cover | contain
 
 Clicking a tile opens the more-info dialog of the matching sensor.
 
+## Weather view in one step
+
+The integration ships a dashboard strategy that builds a complete weather view from all cards (hourly, weather
+details, health and safety, activities, monthly forecast and all enabled maps):
+
+```yaml
+# a whole dashboard (one view per MSN Weather entry): Settings → Dashboards → Add dashboard →
+# "New dashboard from scratch" → ⋮ → Raw configuration editor
+strategy:
+  type: custom:msn-weather
+  appearance: ha          # optional: ha (default) | msn
+  maps: true              # optional
+  life: tiles             # optional: tiles (default, one tile per index) | cards
+
+# or a single view inside an existing dashboard
+views:
+  - strategy:
+      type: custom:msn-weather
+      entity: weather.upper_east_side   # optional, default: first MSN Weather entry
+```
+
+Take control (⋮ → *Take control*) to turn the generated view into normal cards you can edit.
+
 [← Back to the README](../README.md)
