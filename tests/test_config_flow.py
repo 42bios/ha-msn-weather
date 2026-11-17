@@ -13,11 +13,13 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.msn_weather.api import MsnWeatherError, parse_response
 from custom_components.msn_weather.const import (
+    CONF_API_KEY,
     CONF_CYCLONE_FOCUS,
     CONF_CYCLONE_RADIUS,
     CONF_LANGUAGE,
     CONF_MSN_URL,
     CONF_USE_HOME,
+    DEFAULT_API_KEY,
     DOMAIN,
 )
 
@@ -83,6 +85,16 @@ async def test_options_flow(hass: HomeAssistant, flow_client, mock_frontend) -> 
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert entry.options[CONF_LANGUAGE] == "de-de"
     assert entry.options[CONF_CYCLONE_RADIUS] == 3000
+    assert CONF_API_KEY not in entry.options
+
+    # the built-in key is not stored, an own key is
+    for key, stored in ((DEFAULT_API_KEY, None), (" my-key ", "my-key")):
+        result = await hass.config_entries.options.async_init(entry.entry_id)
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {**defaults, CONF_API_KEY: key}
+        )
+        assert result["type"] is FlowResultType.CREATE_ENTRY
+        assert entry.options.get(CONF_API_KEY) == stored
 
 
 def vol_undefined():

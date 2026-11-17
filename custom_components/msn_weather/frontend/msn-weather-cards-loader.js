@@ -1,2 +1,4 @@
-// Loads the MSN Weather cards; the timestamp makes sure updates are picked up without a restart.
-import(new URL("./msn-weather-cards.js?t=" + Math.floor(Date.now() / 60000), import.meta.url).href);
+// Loads the MSN Weather cards. The integration passes a hash of the cards file as "v", so the
+// browser caches the cards until an update changes them.
+const version = new URL(import.meta.url).searchParams.get("v") || Date.now();
+import(new URL("./msn-weather-cards.js?v=" + version, import.meta.url).href);

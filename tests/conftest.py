@@ -30,6 +30,11 @@ def auto_enable_custom_integrations(enable_custom_integrations: None) -> None:
     """Load custom_components/ in every test."""
 
 
+@pytest.fixture(autouse=True)
+def auto_mock_storage(hass_storage: dict[str, Any]) -> None:
+    """Keep the stored API key in memory instead of writing it to disk."""
+
+
 @pytest.fixture
 def storms() -> list[dict[str, Any]]:
     listing = load("hurricane_list.json")

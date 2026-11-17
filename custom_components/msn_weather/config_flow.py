@@ -24,6 +24,7 @@ from homeassistant.helpers.selector import (
 )
 
 from .api import MsnWeatherAuthError, MsnWeatherClient, MsnWeatherError, parse_msn_url
+from .coordinator import automatic_api_key
 from .const import (
     CONF_API_KEY,
     CONF_CYCLONE_DISTURBANCES,
@@ -101,7 +102,7 @@ class MsnWeatherConfigFlow(ConfigFlow, domain=DOMAIN):
             if not errors:
                 language = user_input[CONF_LANGUAGE]
                 client = MsnWeatherClient(
-                    async_get_clientsession(self.hass), lat, lon, language, DEFAULT_API_KEY
+                    async_get_clientsession(self.hass), lat, lon, language, automatic_api_key(self.hass)
                 )
                 try:
                     data = await client.async_get()
@@ -166,7 +167,12 @@ class MsnWeatherOptionsFlow(OptionsFlow):
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
+        automatic_key = automatic_api_key(self.hass)
         if user_input is not None:
+            # store the key only when the user entered one of their own
+            key = (user_input.pop(CONF_API_KEY, None) or "").strip()
+            if key and key not in (automatic_key, DEFAULT_API_KEY):
+                user_input[CONF_API_KEY] = key
             return self.async_create_entry(data=user_input)
 
         options = self.config_entry.options
@@ -256,7 +262,7 @@ class MsnWeatherOptionsFlow(OptionsFlow):
                 ): BooleanSelector(),
                 vol.Optional(
                     CONF_API_KEY,
-                    default=options.get(CONF_API_KEY, DEFAULT_API_KEY),
+                    description={"suggested_value": options.get(CONF_API_KEY) or automatic_key},
                 ): TextSelector(),
             }
         )

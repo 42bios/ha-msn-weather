@@ -13,12 +13,15 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.msn_weather.api import MsnWeatherAuthError
 from custom_components.msn_weather.const import (
+    CONF_API_KEY,
     CONF_CYCLONE_RADIUS,
     CONF_IMAGE_SECRET,
     CONF_LANGUAGE,
     CONF_USE_HOME,
+    DEFAULT_API_KEY,
     DOMAIN,
 )
+from custom_components.msn_weather.coordinator import STORAGE_KEY
 
 from .conftest import LAT, LON
 
@@ -104,7 +107,7 @@ async def test_cyclone_radius(hass: HomeAssistant, mock_client, mock_frontend) -
     assert hass.states.get("select.upper_east_side_cyclone_map_storm").attributes["options"] == ["auto"]
 
 
-async def test_api_key_rotation(hass: HomeAssistant, mock_client, mock_frontend) -> None:
+async def test_api_key_rotation(hass: HomeAssistant, mock_client, mock_frontend, hass_storage) -> None:
     good = mock_client.async_get.side_effect
 
     async def get():
@@ -120,6 +123,31 @@ async def test_api_key_rotation(hass: HomeAssistant, mock_client, mock_frontend)
         entry = await _setup(hass)
     assert entry.state is ConfigEntryState.LOADED
     assert mock_client.api_key == "new-key"
+    # the key found on msn.com is kept for the next start
+    await hass.async_block_till_done()
+    assert hass.data[DOMAIN].api_key == "new-key"
+    assert hass_storage[STORAGE_KEY]["data"] == {"api_key": "new-key"}
+
+
+async def test_stored_api_key_is_used(hass: HomeAssistant, mock_client, mock_frontend, hass_storage) -> None:
+    """A key found earlier is used right away after a restart."""
+    hass_storage[STORAGE_KEY] = {"version": 1, "minor_version": 1, "key": STORAGE_KEY, "data": {"api_key": "stored-key"}}
+    await _setup(hass)
+    assert mock_client.client_cls.call_args.args[4] == "stored-key"
+
+
+async def test_own_api_key_wins(hass: HomeAssistant, mock_client, mock_frontend, hass_storage) -> None:
+    hass_storage[STORAGE_KEY] = {"version": 1, "minor_version": 1, "key": STORAGE_KEY, "data": {"api_key": "stored-key"}}
+    await _setup(hass, {CONF_API_KEY: "my-key"})
+    assert mock_client.client_cls.call_args.args[4] == "my-key"
+
+
+async def test_built_in_key_is_dropped_from_options(hass: HomeAssistant, mock_client, mock_frontend) -> None:
+    """Older versions saved the built-in key with the options."""
+    entry = await _setup(hass, {CONF_API_KEY: DEFAULT_API_KEY, CONF_CYCLONE_RADIUS: 100})
+    assert entry.state is ConfigEntryState.LOADED
+    assert entry.options == {CONF_CYCLONE_RADIUS: 100}
+    assert mock_client.client_cls.call_args.args[4] == DEFAULT_API_KEY
 
 
 async def test_api_key_rejected(hass: HomeAssistant, mock_client, mock_frontend) -> None:

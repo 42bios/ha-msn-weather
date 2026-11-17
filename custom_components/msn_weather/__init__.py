@@ -12,8 +12,8 @@ from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
-from .const import CONF_USE_HOME, DOMAIN
-from .coordinator import MsnWeatherConfigEntry, MsnWeatherCoordinator
+from .const import CONF_API_KEY, CONF_USE_HOME, DEFAULT_API_KEY, DOMAIN
+from .coordinator import MsnWeatherConfigEntry, MsnWeatherCoordinator, async_load_shared
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 CARDS_URL = "/msn_weather_static"
@@ -34,12 +34,13 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     await hass.http.async_register_static_paths(
         [StaticPathConfig(CARDS_URL, str(CARDS_FILE.parent), False)]
     )
-    # The loader imports the cards with a time-based cache buster, so card updates
-    # reach the browser without restarting Home Assistant.
+    # The loader gets a hash of the cards file and imports the cards with it, so the
+    # browser caches them until an update changes the file.
     digest = await hass.async_add_executor_job(
         lambda: hashlib.sha1(CARDS_FILE.read_bytes()).hexdigest()[:10]
     )
     add_extra_js_url(hass, f"{CARDS_URL}/msn-weather-cards-loader.js?v={digest}")
+    await async_load_shared(hass)
     return True
 
 
@@ -53,6 +54,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: MsnWeatherConfigEntry) -
             entry,
             data={**entry.data, CONF_LATITUDE: hass.config.latitude, CONF_LONGITUDE: hass.config.longitude},
         )
+    if entry.options.get(CONF_API_KEY) == DEFAULT_API_KEY:
+        # Older versions stored the built-in key when the options were saved. Drop it, so
+        # the entry follows the built-in key of later versions and the key found on msn.com.
+        hass.config_entries.async_update_entry(
+            entry, options={k: v for k, v in entry.options.items() if k != CONF_API_KEY}
+        )
+    await async_load_shared(hass)
     coordinator = MsnWeatherCoordinator(hass, entry)
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator

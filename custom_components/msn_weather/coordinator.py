@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import timedelta
 import logging
 
@@ -10,6 +11,7 @@ from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
@@ -46,6 +48,36 @@ _LOGGER = logging.getLogger(__name__)
 
 type MsnWeatherConfigEntry = ConfigEntry[MsnWeatherCoordinator]
 
+STORAGE_KEY = f"{DOMAIN}.api_key"
+STORAGE_VERSION = 1
+
+
+@dataclass
+class MsnWeatherShared:
+    """State shared by all entries: the API key found on msn.com, kept across restarts."""
+
+    store: Store[dict[str, str]]
+    api_key: str | None = None
+
+    async def async_set_api_key(self, key: str) -> None:
+        if key != self.api_key:
+            self.api_key = key
+            await self.store.async_save({"api_key": key})
+
+
+async def async_load_shared(hass: HomeAssistant) -> MsnWeatherShared:
+    """Load the shared state once."""
+    if (shared := hass.data.get(DOMAIN)) is None:
+        shared = hass.data[DOMAIN] = MsnWeatherShared(Store(hass, STORAGE_VERSION, STORAGE_KEY))
+        shared.api_key = (await shared.store.async_load() or {}).get("api_key")
+    return shared
+
+
+def automatic_api_key(hass: HomeAssistant) -> str:
+    """Key used when the options hold none: the one found on msn.com, else the built-in one."""
+    shared: MsnWeatherShared | None = hass.data.get(DOMAIN)
+    return (shared.api_key if shared else None) or DEFAULT_API_KEY
+
 
 class MsnWeatherCoordinator(DataUpdateCoordinator[MsnWeatherData]):
     """Fetch data from MSN periodically."""
@@ -58,17 +90,18 @@ class MsnWeatherCoordinator(DataUpdateCoordinator[MsnWeatherData]):
         self.language: str = options.get(CONF_LANGUAGE) or entry.data.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
         # values follow the Home Assistant unit system (US customary -> °F, mph, inHg, mi, in)
         self.imperial: bool = hass.config.units is US_CUSTOMARY_SYSTEM
+        api_key = options.get(CONF_API_KEY) or automatic_api_key(hass)
         self.client = MsnWeatherClient(
             async_get_clientsession(hass),
             entry.data[CONF_LATITUDE],
             entry.data[CONF_LONGITUDE],
             self.language,
-            options.get(CONF_API_KEY) or DEFAULT_API_KEY,
+            api_key,
             imperial=self.imperial,
         )
         self.map_renderer = MsnMapRenderer(
             async_get_clientsession(hass),
-            options.get(CONF_API_KEY) or DEFAULT_API_KEY,
+            api_key,
             self.language,
             imperial=self.imperial,
         )
@@ -100,6 +133,9 @@ class MsnWeatherCoordinator(DataUpdateCoordinator[MsnWeatherData]):
             except MsnWeatherAuthError:
                 await self._async_refresh_api_key()
                 data = await self.client.async_get()
+                # the new key works: keep it for the next start and for other entries
+                if (shared := self.hass.data.get(DOMAIN)) is not None:
+                    await shared.async_set_api_key(self.client.api_key)
         except MsnWeatherAuthError as err:
             ir.async_create_issue(
                 self.hass, DOMAIN, f"api_key_{self.config_entry.entry_id}",
